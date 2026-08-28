@@ -7,3 +7,9 @@
 # Generated per-env sdkconfig (sdkconfig.defaults IS versioned)
 sdkconfig.*
 !sdkconfig.defaults
+
+# NEVER commit private keys
+*.keys
+
+# Per-device identity and radio settings
+include/tracker_config.local.h
