@@ -3,7 +3,7 @@
 **When it powers on, your iPhone runs a Shortcut.**
 
 <p align="center">
-  <a href="https://mattboxx.github.io/Esp32_Iphone_shortcuts_bluetooth_trigger/">
+  <a href="https://mattboxx.github.io/esp32-bt-trigger/">
     <img src="docs/img/hero.svg" width="560" alt="Power on → the ESP32 connects over Bluetooth → the iPhone runs a Shortcut">
   </a>
 </p>
@@ -12,11 +12,11 @@ A tiny open-source firmware that turns a $3 ESP32 board into a **Bluetooth trigg
 for iPhone Shortcuts automations**. No app on the phone, no Wi-Fi, no cloud, no NFC
 tag to tap. Power it up → it connects → iOS runs your automation.
 
-[![Firmware](https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/actions/workflows/firmware.yml/badge.svg)](https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/actions/workflows/firmware.yml)
+[![Firmware](https://github.com/Mattboxx/esp32-bt-trigger/actions/workflows/firmware.yml/badge.svg)](https://github.com/Mattboxx/esp32-bt-trigger/actions/workflows/firmware.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-support-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/mattboxx)
 
-### ⚡ [Install it from your browser →](https://mattboxx.github.io/Esp32_Iphone_shortcuts_bluetooth_trigger/)
+### ⚡ [Install it from your browser →](https://mattboxx.github.io/esp32-bt-trigger/)
 
 Plug the board into your computer, pick a name and options, click **Install**.
 Two minutes, nothing to install, no code to edit. (Chrome or Edge on a computer.)
@@ -74,7 +74,7 @@ clicked.
 | ESP32-H2 / C2 / C5 | BLE | 🔜 Planned |
 
 Any flash size **from 2 MB** works. If you test a beta chip, please
-[open an issue](https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/issues)
+[open an issue](https://github.com/Mattboxx/esp32-bt-trigger/issues)
 with the result, even if it's just "works on my C3 SuperMini".
 
 > The BLE variant is a real HID mouse over Bluetooth LE (the same protocol BLE mice
@@ -83,7 +83,7 @@ with the result, even if it's just "works on my C3 SuperMini".
 
 ## Settings (no code to edit)
 
-Everything is set in the [web installer](https://mattboxx.github.io/Esp32_Iphone_shortcuts_bluetooth_trigger/).
+Everything is set in the [web installer](https://mattboxx.github.io/esp32-bt-trigger/).
 Connect the board again later: your settings are read back, and **Save settings only**
 rewrites them in a second without touching the pairing.
 
@@ -105,7 +105,7 @@ rewrites them in a second without touching the pairing.
 
 ## Quick start
 
-1. **Flash:** open the [web installer](https://mattboxx.github.io/Esp32_Iphone_shortcuts_bluetooth_trigger/), click **Connect**, choose your settings, click **Install**.
+1. **Flash:** open the [web installer](https://mattboxx.github.io/esp32-bt-trigger/), click **Connect**, choose your settings, click **Install**.
 2. **Pair (once):** iPhone → **Settings → Bluetooth** → tap your device under *Other Devices*. No PIN.
 3. **Automate:** **Shortcuts → Automation → + → Bluetooth** → choose your device →
    **Is Connected** → **Run Immediately** → add your actions.
@@ -116,7 +116,7 @@ Every time the board powers up (or the switch/button fires) and connects, the au
 <summary><b>Flash without the browser (esptool)</b></summary>
 
 Download the file for your chip from [`firmware/`](firmware) or the
-[Releases](https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/releases)
+[Releases](https://github.com/Mattboxx/esp32-bt-trigger/releases)
 page. Each file is a merged image written at `0x0`:
 
 ```bash
@@ -185,7 +185,7 @@ for new test boards and iOS update testing:
 [![GitHub Sponsors](https://img.shields.io/badge/♥_Sponsor-GitHub-db61a2)](https://github.com/sponsors/Mattboxx)
 
 Not in a position to donate? A ⭐ or a hardware test report in the
-[issues](https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/issues) helps just as much.
+[issues](https://github.com/Mattboxx/esp32-bt-trigger/issues) helps just as much.
 
 ## License
 

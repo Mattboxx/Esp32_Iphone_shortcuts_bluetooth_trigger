@@ -1,6 +1,6 @@
 # Ready-to-flash firmware
 
-The easiest way is the **[web installer](https://mattboxx.github.io/Esp32_Iphone_shortcuts_bluetooth_trigger/)**:
+The easiest way is the **[web installer](https://mattboxx.github.io/esp32-bt-trigger/)**:
 it picks the right file for your chip and writes your settings (name, trigger mode,
 LED, button…) at the same time.
 

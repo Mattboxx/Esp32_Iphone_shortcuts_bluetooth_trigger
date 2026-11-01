@@ -1,6 +1,6 @@
 # Campagna di lancio: ESP32 BT Trigger v2
 
-Link da usare ovunque: **https://mattboxx.github.io/Esp32_Iphone_shortcuts_bluetooth_trigger/**
+Link da usare ovunque: **https://mattboxx.github.io/esp32-bt-trigger/**
 (il sito, non il repo: il sito converte, il repo spaventa chi non è sviluppatore).
 
 ---
