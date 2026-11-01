@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 40 420 240" width="840" height="480" role="img" aria-labelledby="t">
+  <title id="t">Power on → the ESP32 connects over Bluetooth → the iPhone runs a Shortcut</title>
+  <style>
+    .box { fill: #ffffff; stroke: #d9d9d2; stroke-width: 2; }
+    .chip { fill: #f0f0ec; stroke: #d9d9d2; stroke-width: 2; }
+    .screen { fill: #f0f0ec; }
+    .label { fill: #5d6168; font: 600 13px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .chip-t { fill: #17181a; font: 600 12px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .bolt { fill: #f5a623; }
+    .arrow { fill: #5d6168; }
+    .flow { stroke: #5d6168; stroke-width: 2; fill: none; stroke-dasharray: 5 5; animation: dash 1.2s linear infinite; }
+    .wave { fill: none; stroke: #0a66ff; stroke-width: 3; stroke-linecap: round; animation: fade 1.6s ease-in-out infinite; }
+    .w2 { animation-delay: .3s; }
+    .t1 { fill: #0a66ff; animation: pulse 3s infinite; }
+    .t2 { fill: #8db3f5; }
+    .t3 { fill: #c4d8f8; }
+    @keyframes dash { to { stroke-dashoffset: -20; } }
+    @keyframes fade { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
+    @keyframes pulse { 0%, 60%, 100% { opacity: 1; } 30% { opacity: .55; } }
+    @media (prefers-color-scheme: dark) {
+      .box { fill: #17191d; stroke: #3a3f47; }
+      .chip { fill: #1f2227; stroke: #3a3f47; }
+      .screen { fill: #1f2227; }
+      .label, .arrow { fill: #a0a4ab; }
+      .chip-t { fill: #ececec; }
+      .flow { stroke: #a0a4ab; }
+      .wave { stroke: #4d8dff; }
+      .t1 { fill: #4d8dff; }
+      .t2 { fill: #2f5596; }
+      .t3 { fill: #22365a; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .flow, .wave, .t1 { animation: none; }
+    }
+  </style>
+
+  <!-- power -->
+  <rect class="box" x="18" y="112" width="86" height="76" rx="14"/>
+  <path class="bolt" d="M61 128 l-12 26 h12 l-6 22 l20 -30 h-12 l8 -18z"/>
+  <text class="label" x="61" y="206" text-anchor="middle">power on</text>
+
+  <!-- arrow -->
+  <path class="flow" d="M110 150 H146"/>
+  <path class="arrow" d="M144 145 L153 150 L144 155 z"/>
+
+  <!-- ESP32 -->
+  <rect class="box" x="156" y="118" width="96" height="64" rx="8"/>
+  <rect class="chip" x="178" y="132" width="52" height="36" rx="4"/>
+  <text class="chip-t" x="204" y="155" text-anchor="middle">ESP32</text>
+  <text class="label" x="204" y="206" text-anchor="middle">connects</text>
+
+  <!-- bluetooth waves -->
+  <path class="wave" d="M262 132 q14 18 0 36"/>
+  <path class="wave w2" d="M274 122 q24 28 0 56"/>
+
+  <!-- iPhone -->
+  <rect class="box" x="300" y="60" width="96" height="180" rx="18"/>
+  <rect class="screen" x="310" y="82" width="76" height="136" rx="6"/>
+  <rect class="t1" x="318" y="96" width="60" height="30" rx="7"/>
+  <rect class="t2" x="318" y="134" width="60" height="30" rx="7"/>
+  <rect class="t3" x="318" y="172" width="60" height="30" rx="7"/>
+  <text class="label" x="348" y="258" text-anchor="middle">Shortcut runs</text>
+</svg>

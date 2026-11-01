@@ -2,6 +2,12 @@
 
 **When it powers on, your iPhone runs a Shortcut.**
 
+<p align="center">
+  <a href="https://mattboxx.github.io/Esp32_Iphone_shortcuts_bluetooth_trigger/">
+    <img src="docs/img/hero.svg" width="560" alt="Power on → the ESP32 connects over Bluetooth → the iPhone runs a Shortcut">
+  </a>
+</p>
+
 A tiny open-source firmware that turns a $3 ESP32 board into a **Bluetooth trigger
 for iPhone Shortcuts automations**. No app on the phone, no Wi-Fi, no cloud, no NFC
 tag to tap. Power it up → it connects → iOS runs your automation.
