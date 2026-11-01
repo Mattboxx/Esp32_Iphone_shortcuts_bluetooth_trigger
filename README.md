@@ -60,7 +60,7 @@ clicked.
 
 | Chip | Bluetooth mode | Status |
 |---|---|---|
-| **ESP32** (original): DevKit, WROOM-32, WROVER, PICO-D4, D1 mini32, M5 Atom, ESP32-CAM, TTGO… incl. single-core & 26 MHz crystal variants | Classic BT HID | ✅ Tested on iPhone |
+| **ESP32** (original): DevKit, WROOM-32, WROVER, PICO-D4, D1 mini32, M5 Atom, ESP32-CAM, TTGO… incl. single-core & 26 MHz crystal variants | Classic BT HID | ✅ Tested on iPhone (v1); v2 rewrite being verified |
 | **ESP32-C3**: SuperMini, XIAO C3, DevKitM, LOLIN C3 Mini, M5Stamp C3 | BLE HID (HID over GATT) | 🧪 Beta, not yet confirmed on iPhone |
 | **ESP32-S3**: DevKitC, XIAO S3, AtomS3, S3 SuperMini | BLE HID (HID over GATT) | 🧪 Beta, not yet confirmed on iPhone |
 | **ESP32-C6**: DevKitC/M, XIAO C6 | BLE HID (HID over GATT) | 🧪 Beta, not yet confirmed on iPhone |

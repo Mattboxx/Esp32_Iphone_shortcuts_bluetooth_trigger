@@ -66,7 +66,7 @@ function renderDownloads() {
   for (const b of state.manifest.builds) {
     const tr = document.createElement("tr");
     const bt = b.transport === "classic"
-      ? 'Classic HID <span class="tag ok">tested</span>'
+      ? 'Classic HID <span class="tag ok">v1 tested</span>'
       : 'BLE HID <span class="tag">beta</span>';
     tr.innerHTML = `<td>${b.chip}</td><td>${bt}</td>
       <td><a href="firmware/${b.file}" download>${b.file}</a></td>
@@ -286,7 +286,7 @@ function renderFwInfo() {
   const c = CHIPS[state.chip];
   const build = buildFor(state.chip);
   const transportLabel = c.transport === "classic"
-    ? 'Classic Bluetooth HID <span class="tag ok">tested on iPhone</span>'
+    ? 'Classic Bluetooth HID <span class="tag ok">approach tested on iPhone (v1)</span>'
     : 'Bluetooth LE HID <span class="tag">beta: please report if it works</span>';
   el.innerHTML = build
     ? `Firmware <b>v${state.manifest.version}</b> for <b>${c.label}</b> · ${transportLabel}` +

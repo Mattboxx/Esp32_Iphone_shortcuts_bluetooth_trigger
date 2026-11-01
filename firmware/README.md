@@ -6,7 +6,7 @@ LED, button…) at the same time.
 
 | File | Chip | Bluetooth |
 |---|---|---|
-| `bt-trigger-esp32.factory.bin`   | ESP32 (original)  | Classic BT HID, tested on iPhone |
+| `bt-trigger-esp32.factory.bin`   | ESP32 (original)  | Classic BT HID, v1 tested on iPhone |
 | `bt-trigger-esp32c3.factory.bin` | ESP32-C3          | BLE HID, beta |
 | `bt-trigger-esp32s3.factory.bin` | ESP32-S3          | BLE HID, beta |
 | `bt-trigger-esp32c6.factory.bin` | ESP32-C6          | BLE HID, beta |
