@@ -1,23 +1,32 @@
 name: Firmware
 
 # Builds every chip variant on each push / PR and runs the settings-contract
-# tests. On a "v*" tag a separate job publishes a GitHub Release.
+# tests. When a GitHub Release is published (any tag name), the release job
+# attaches the firmware files of that tag: the same binaries the web installer
+# serves. To (re)attach files to an existing release: Actions -> Firmware ->
+# Run workflow -> tag = the release tag.
 # Security: read-only token by default; only the release job can write, and
 # every third-party action is pinned to a full commit SHA (Dependabot bumps them).
 on:
   push:
     branches: ["**"]
-    tags: ["v*"]
     paths-ignore: ["docs/**", "marketing/**", "**.md"]
   pull_request:
+  release:
+    types: [published]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to build and attach files to (empty = just build)"
+        required: false
+        default: ""
 
 permissions:
   contents: read
 
 concurrency:
-  group: firmware-${{ github.ref }}
-  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+  group: firmware-${{ inputs.tag || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -26,6 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
+          ref: ${{ inputs.tag || github.ref }}
           persist-credentials: false
 
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
@@ -60,24 +70,37 @@ jobs:
           if-no-files-found: error
 
   release:
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
+    # Published release, or a manual run with a tag.
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.tag != '')
+    needs: build              # only if the source builds and the tests pass
     runs-on: ubuntu-latest
     permissions:
-      contents: write          # create the Release, nothing else
+      contents: write          # attach files to the Release, nothing else
     steps:
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
-          name: firmware
-          path: firmware
+          ref: ${{ inputs.tag || github.ref }}
+          persist-credentials: false
 
-      - name: Checksums
-        run: cd firmware && sha256sum *.bin > SHA256SUMS.txt && cat SHA256SUMS.txt
+      - name: Verify committed firmware against manifest.json
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, pathlib, sys
+          m = json.loads(pathlib.Path("firmware/manifest.json").read_text())
+          bad = 0
+          for b in m["builds"]:
+              data = pathlib.Path("firmware", b["file"]).read_bytes()
+              ok = hashlib.sha256(data).hexdigest() == b["sha256"] and len(data) == b["size"]
+              print(("OK  " if ok else "BAD ") + b["file"])
+              bad += not ok
+          sys.exit(1 if bad else 0)
+          PY
+          cd firmware && sha256sum *.bin > SHA256SUMS.txt && cat SHA256SUMS.txt
 
-      - name: Publish release
+      - name: Attach files to the release
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         with:
-          generate_release_notes: true
+          tag_name: ${{ inputs.tag || github.event.release.tag_name }}
           files: |
             firmware/*.bin
             firmware/manifest.json
