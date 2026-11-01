@@ -1,0 +1,61 @@
+name: Hardware report
+description: Tell us whether BT Trigger works on your board and iPhone (works or not, both help!)
+title: "[Hardware] <board name> - works / doesn't work"
+labels: ["hardware-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! Every report goes into the compatibility table so the next person knows what to buy.
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result
+      options:
+        - "✅ Works: pairs, reconnects and fires the automation"
+        - "⚠️ Partly works (explain below)"
+        - "❌ Doesn't work"
+    validations:
+      required: true
+  - type: input
+    id: board
+    attributes:
+      label: Board
+      description: Exact name, e.g. "ESP32-C3 SuperMini", "Waveshare ESP32-S3-Zero", "DOIT ESP32 DevKit V1"
+    validations:
+      required: true
+  - type: dropdown
+    id: chip
+    attributes:
+      label: Chip (shown by the web installer)
+      options: ["ESP32", "ESP32-S3", "ESP32-C3", "ESP32-C6", "Other"]
+    validations:
+      required: true
+  - type: input
+    id: ios
+    attributes:
+      label: iPhone model and iOS version
+      placeholder: "iPhone 13, iOS 18.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Trigger mode
+      options: ["When it gets power", "While a pin is active", "When a pin is pressed"]
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: What did you check?
+      options:
+        - label: Appears in iPhone Settings → Bluetooth → Other Devices
+        - label: Pairs without a PIN
+        - label: Shortcuts automation runs on connect
+        - label: Reconnects by itself after a power cycle
+        - label: Settings read back / "Save settings only" works
+  - type: textarea
+    id: log
+    attributes:
+      label: Device log (optional but very useful if something fails)
+      description: Web installer → "Show live device log", or `pio device monitor`. Press RESET on the board to capture the boot.
+      render: text
