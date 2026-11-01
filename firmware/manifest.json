@@ -7,32 +7,32 @@
       "env": "esp32",
       "transport": "classic",
       "file": "bt-trigger-esp32.factory.bin",
-      "size": 662592,
-      "sha256": "8a437de0432775b6a5d362be1edc5e567a72a90bf582227576be48c4cca6ff70"
+      "size": 663200,
+      "sha256": "f00564906c968380fbd417df841482af0024cdfcbe70cffbb811d078a0154e83"
     },
     {
       "chip": "ESP32-S3",
       "env": "esp32s3",
       "transport": "ble",
       "file": "bt-trigger-esp32s3.factory.bin",
-      "size": 829040,
-      "sha256": "5c3185f7642e474615f816ea1a8e97328112085e36ccd4f2ed4a4f5dbc9bc593"
+      "size": 829616,
+      "sha256": "1921826a2d0f033895dd7af25bbb43d04a25bc8a5fe7c260b2bb50759d8ba3d7"
     },
     {
       "chip": "ESP32-C3",
       "env": "esp32c3",
       "transport": "ble",
       "file": "bt-trigger-esp32c3.factory.bin",
-      "size": 878896,
-      "sha256": "849540a32ba5ab1b2a0850a537e3a44f354c12a299117bbee11a5452da4a83e2"
+      "size": 879536,
+      "sha256": "45b8ba8cf2863be57bf6bab3011c3b74cf228cc8e958da3b33072b04664224aa"
     },
     {
       "chip": "ESP32-C6",
       "env": "esp32c6",
       "transport": "ble",
       "file": "bt-trigger-esp32c6.factory.bin",
-      "size": 999312,
-      "sha256": "8908ef68391b464f21b4998ab3584132c320dd0150876f7d5cbc666ff486231d"
+      "size": 1000256,
+      "sha256": "ef0c3d9630efdd56d2635d6f226cee387e0fafe3239f84151e98c5710203b95f"
     }
   ]
 }

@@ -261,6 +261,20 @@ void transport_init(const btt_config_t *cfg)
     esp_bt_controller_config_t bt_cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_bt_controller_init(&bt_cfg));
     ESP_ERROR_CHECK(esp_bt_controller_enable(ESP_BT_MODE_CLASSIC_BT));
+
+    /* TX power: must be set after the controller is enabled, before any RF use.
+     * min = max pins the power, so the range really changes. */
+    if (cfg->tx_power_set) {
+        static const int8_t lv[] = {-12, -9, -6, -3, 0, 3, 6, 9};
+        int i = btt_nearest_level(lv, sizeof(lv), cfg->tx_power_dbm);
+        esp_power_level_t p = (esp_power_level_t)(ESP_PWR_LVL_N12 + i);
+        if (esp_bredr_tx_power_set(p, p) == ESP_OK) {
+            ESP_LOGI(TAG, "TX power set to %+d dBm", lv[i]);
+        } else {
+            ESP_LOGW(TAG, "Could not set TX power");
+        }
+    }
+
     ESP_ERROR_CHECK(esp_bluedroid_init());
     ESP_ERROR_CHECK(esp_bluedroid_enable());
 

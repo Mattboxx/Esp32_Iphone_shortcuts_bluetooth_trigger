@@ -65,9 +65,9 @@ function renderDownloads() {
   tb.innerHTML = "";
   for (const b of state.manifest.builds) {
     const tr = document.createElement("tr");
-    const bt = b.transport === "classic"
-      ? 'Classic HID <span class="tag ok">v1 tested</span>'
-      : 'BLE HID <span class="tag">beta</span>';
+    const st = CHIPS[b.chip]?.status;
+    const tag = st ? `<span class="tag${st.ok ? " ok" : ""}">${st.short}</span>` : "";
+    const bt = `${b.transport === "classic" ? "Classic HID" : "BLE HID"} ${tag}`;
     tr.innerHTML = `<td>${b.chip}</td><td>${bt}</td>
       <td><a href="firmware/${b.file}" download>${b.file}</a></td>
       <td>${(b.size / 1024).toFixed(0)} KB</td>`;
@@ -124,6 +124,28 @@ function populateForChip(chip) {
   document.querySelectorAll("select.pin-in").forEach((s) => fillPinSelect(s, c.inputs));
   document.querySelectorAll("select.pin-out").forEach((s) => fillPinSelect(s, outputPins(chip)));
   $("reconnect-row").hidden = c.transport !== "classic";
+  fillTxPower(c.txLevels);
+}
+
+/** TX power options for the chip; keeps the current choice (nearest level). */
+function fillTxPower(levels) {
+  const sel = $("tx-power");
+  const keep = sel.value;
+  sel.innerHTML = "";
+  sel.add(new Option("Default (Espressif's standard)", ""));
+  const lo = levels[0], hi = levels[levels.length - 1];
+  for (const d of [...levels].reverse()) {
+    const note = d === hi ? " · maximum range" : d === lo ? " · minimum, very short range" : "";
+    sel.add(new Option(`${d > 0 ? "+" : d < 0 ? "−" : ""}${Math.abs(d)} dBm${note}`, String(d)));
+  }
+  setTxPower(keep === "" ? null : Number(keep), levels);
+}
+
+function setTxPower(dbm, levels = CHIPS[state.chip || "ESP32"].txLevels) {
+  const sel = $("tx-power");
+  if (dbm === null || dbm === undefined || Number.isNaN(dbm)) { sel.value = ""; return; }
+  const nearest = levels.reduce((a, b) => (Math.abs(b - dbm) < Math.abs(a - dbm) ? b : a));
+  sel.value = String(nearest);
 }
 
 function applyBoardPreset(id) {
@@ -155,6 +177,7 @@ function readForm() {
     triggerPull: Number($("trigger-pull").value),
     debounceMs: Number($("debounce").value) || DEFAULTS.debounceMs,
     holdS: Math.max(0, Number($("hold").value) || 0),
+    txPowerDbm: $("tx-power").value === "" ? null : Number($("tx-power").value),
   };
 }
 
@@ -181,6 +204,7 @@ function writeForm(s) {
   $("trigger-pull").value = String(pull);
   $("debounce").value = s.debounceMs || DEFAULTS.debounceMs;
   $("hold").value = s.holdS || 0;
+  setTxPower(s.txPowerDbm);
   setMode(s.triggerMode, true);
 }
 
@@ -285,9 +309,8 @@ function renderFwInfo() {
   if (!state.chip || !state.loader) { el.innerHTML = ""; return; }
   const c = CHIPS[state.chip];
   const build = buildFor(state.chip);
-  const transportLabel = c.transport === "classic"
-    ? 'Classic Bluetooth HID <span class="tag ok">approach tested on iPhone (v1)</span>'
-    : 'Bluetooth LE HID <span class="tag">beta: please report if it works</span>';
+  const transportLabel = `${c.transport === "classic" ? "Classic Bluetooth HID" : "Bluetooth LE HID"} ` +
+    `<span class="tag${c.status.ok ? " ok" : ""}">${c.status.long}</span>`;
   el.innerHTML = build
     ? `Firmware <b>v${state.manifest.version}</b> for <b>${c.label}</b> · ${transportLabel}` +
       (state.hasOurFirmware ? "<br>Your board already runs BT Trigger: you can update it or just save the settings." : "")

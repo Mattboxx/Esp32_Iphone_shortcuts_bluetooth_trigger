@@ -5,12 +5,19 @@
 import { LED } from "./config.js";
 
 const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+const steps = (a, b, s) => Array.from({ length: Math.floor((b - a) / s) + 1 }, (_, i) => a + i * s);
+
+// iPhone test status per chip, shown in the installer and downloads table.
+const TESTED = (short, long) => ({ ok: true, short, long });
+const BETA = { ok: false, short: "beta", long: "beta: please report if it works" };
 
 export const CHIPS = {
   ESP32: {
     env: "esp32",
     transport: "classic",
     label: "ESP32 (original)",
+    status: TESTED("v1 tested", "approach tested on iPhone (v1)"),
+    txLevels: steps(-12, 9, 3),               // dBm the chip supports
     // 6-11: SPI flash. 16/17: flash/PSRAM on PICO-D4 & WROVER modules. 20,24,28-31: don't exist.
     inputs: range(0, 39).filter((g) => ![6, 7, 8, 9, 10, 11, 16, 17, 20, 24, 28, 29, 30, 31].includes(g)),
     inputOnly: [34, 35, 36, 37, 38, 39],
@@ -20,6 +27,8 @@ export const CHIPS = {
     env: "esp32s3",
     transport: "ble",
     label: "ESP32-S3",
+    status: TESTED("tested", "tested on iPhone (ESP32-S3-Zero)"),
+    txLevels: steps(-24, 21, 3),
     inputs: [...range(0, 21), ...range(33, 48)],
     inputOnly: [],
     noPull: [],
@@ -28,6 +37,8 @@ export const CHIPS = {
     env: "esp32c3",
     transport: "ble",
     label: "ESP32-C3",
+    status: BETA,
+    txLevels: steps(-24, 21, 3),
     inputs: [...range(0, 10), ...range(18, 21)],
     inputOnly: [],
     noPull: [],
@@ -36,6 +47,8 @@ export const CHIPS = {
     env: "esp32c6",
     transport: "ble",
     label: "ESP32-C6",
+    status: BETA,
+    txLevels: [...steps(-15, 18, 3), 20],
     inputs: range(0, 23),
     inputOnly: [],
     noPull: [],

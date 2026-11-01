@@ -46,6 +46,8 @@ static void set_defaults(btt_config_t *c)
     c->trigger_pull        = PULL_AUTO;
     c->debounce_ms         = 50;
     c->hold_s              = 0;
+    c->tx_power_set        = false;
+    c->tx_power_dbm        = 0;
     c->from_flash          = false;
 }
 
@@ -148,6 +150,9 @@ void btt_config_load(btt_config_t *c)
     c->trigger_pull        = b[54];
     c->debounce_ms         = rd16(b + 56) ? rd16(b + 56) : 50;
     c->hold_s              = rd16(b + 58);
+    /* Byte 55: 0 = default TX power, otherwise dBm + 100 (76..121 = -24..+21). */
+    c->tx_power_set        = b[55] != 0;
+    c->tx_power_dbm        = (int8_t)((int)b[55] - 100);
     c->from_flash          = true;
 
     /* Sanitize everything: a bad value must never brick the trigger. */
@@ -161,6 +166,10 @@ void btt_config_load(btt_config_t *c)
     if (c->debounce_ms < 10)   c->debounce_ms = 10;
     if (c->debounce_ms > 5000) c->debounce_ms = 5000;
     if (c->hold_s > 3600)      c->hold_s = 3600;
+    if (c->tx_power_set) {
+        if (c->tx_power_dbm < -24) c->tx_power_dbm = -24;
+        if (c->tx_power_dbm > 21)  c->tx_power_dbm = 21;
+    }
     c->led_gpio     = sane_gpio(c->led_gpio, true);
     c->button_gpio  = sane_gpio(c->button_gpio, false);
     c->trigger_gpio = sane_gpio(c->trigger_gpio, false);
@@ -198,4 +207,22 @@ void btt_config_log(const btt_config_t *c)
         ESP_LOGI(TAG, "  pair window   : %u s", c->pair_window_s);
     }
     ESP_LOGI(TAG, "  reconnect     : every %u s", c->reconnect_s);
+    if (c->tx_power_set) {
+        ESP_LOGI(TAG, "  TX power      : %d dBm (nearest level supported)", c->tx_power_dbm);
+    } else {
+        ESP_LOGI(TAG, "  TX power      : default");
+    }
+}
+
+int btt_nearest_level(const int8_t *levels, int n, int dbm)
+{
+    int best = 0;
+    for (int i = 1; i < n; i++) {
+        int d  = levels[i] - dbm;
+        int db = levels[best] - dbm;
+        if ((d < 0 ? -d : d) < (db < 0 ? -db : db)) {
+            best = i;
+        }
+    }
+    return best;
 }
