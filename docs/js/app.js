@@ -576,6 +576,7 @@ function init() {
   });
   document.querySelectorAll('input[name="trigger"]').forEach((r) =>
     r.addEventListener("change", (e) => setMode(Number(e.target.value))));
+  $("settings").addEventListener("submit", (e) => e.preventDefault());
   $("settings").addEventListener("input", refreshForm);
   $("settings").addEventListener("change", refreshForm);
   $("forget").addEventListener("change", () => {
