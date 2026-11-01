@@ -37,7 +37,9 @@ jobs:
         run: pip install platformio "esptool>=4.7,<5"
 
       - name: Settings contract tests (web flasher <-> firmware)
-        run: node test/host/run_tests.mjs
+        run: |
+          cc --version | head -1
+          node test/host/run_tests.mjs
 
       - name: Build all variants + merged images
         run: python scripts/make_release.py

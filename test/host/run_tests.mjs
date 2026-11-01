@@ -14,9 +14,15 @@ const root = join(here, "..", "..");
 const tmp = mkdtempSync(join(tmpdir(), "btt-"));
 function compile(name, extra = []) {
   const out = join(tmp, name);
-  execFileSync("cc", ["-std=c11", "-Wall", "-Wextra", "-Werror", ...extra,
-    "-I", join(here, "stubs"), "-I", join(root, "src"),
-    join(here, "test_config.c"), join(root, "src", "config.c"), "-o", out]);
+  try {
+    execFileSync("cc", ["-std=c11", "-Wall", "-Wextra", "-Werror", ...extra,
+      "-I", join(here, "stubs"), "-I", join(root, "src"),
+      join(here, "test_config.c"), join(root, "src", "config.c"), "-o", out],
+      { stdio: ["ignore", "pipe", "pipe"] });
+  } catch (e) {
+    console.error("C compile failed:\n" + (e.stderr?.toString() || e.message));
+    process.exit(1);
+  }
   return out;
 }
 const exe = compile("test_config");
