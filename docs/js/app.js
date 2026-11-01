@@ -59,7 +59,7 @@ function renderDownloads() {
   const tb = $("dl-table").querySelector("tbody");
   if (!state.manifest) {
     tb.innerHTML = `<tr><td colspan="4">Firmware files not found. Get them from the
-      <a href="https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/releases">Releases page</a>.</td></tr>`;
+      <a href="https://github.com/Mattboxx/esp32-bt-trigger/releases">Releases page</a>.</td></tr>`;
     return;
   }
   tb.innerHTML = "";

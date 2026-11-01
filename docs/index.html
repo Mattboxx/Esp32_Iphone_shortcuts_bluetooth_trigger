@@ -11,7 +11,7 @@
   <meta property="og:title" content="ESP32 BT Trigger – a Bluetooth trigger for iPhone Shortcuts">
   <meta property="og:description" content="When it powers on, your iPhone runs a Shortcut. Flash it from the browser in 2 minutes. Open source, no app, no cloud.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://mattboxx.github.io/Esp32_Iphone_shortcuts_bluetooth_trigger/img/og.png">
+  <meta property="og:image" content="https://mattboxx.github.io/esp32-bt-trigger/img/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="img/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
@@ -27,7 +27,7 @@
       <a href="#iphone">iPhone setup</a>
       <a href="#faq">FAQ</a>
       <a class="support-link" id="btn-support" href="#support" role="button" aria-haspopup="dialog">♥ Support</a>
-      <a class="gh" href="https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger">GitHub</a>
+      <a class="gh" href="https://github.com/Mattboxx/esp32-bt-trigger">GitHub</a>
     </nav>
   </div>
 </header>
@@ -43,7 +43,7 @@
         no extra app, no Wi-Fi and no cloud.</p>
       <div class="cta">
         <a class="btn primary" href="#install">Install it from your browser</a>
-        <a class="btn ghost" href="https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger">Source code</a>
+        <a class="btn ghost" href="https://github.com/Mattboxx/esp32-bt-trigger">Source code</a>
       </div>
       <ul class="pills">
         <li>2-minute setup</li><li>No code to write</li><li>Reconnects by itself</li><li>MIT licensed</li>
@@ -355,7 +355,7 @@ esptool.py --port &lt;PORT&gt; write_flash 0x0 bt-trigger-esp32.factory.bin</cod
       <p>With a pin trigger the board stays visible until a phone is paired, so you can pair it before wiring anything. After that it only connects when the pin is active.</p></details>
     <details><summary>Which boards work?</summary>
       <p><b>Any original ESP32</b> (DevKit, WROOM, WROVER, PICO, D1 mini32, M5 Atom, ESP32-CAM, TTGO…), including single-core and 26 MHz-crystal variants. It uses <b>Classic Bluetooth HID</b>, the mode this project was first tested with on iPhone (v1; the v2 rewrite is being verified).</p>
-      <p><b>ESP32-C3, ESP32-S3 and ESP32-C6</b> have no Classic Bluetooth, so they get a <b>Bluetooth LE HID mouse</b> (HID over GATT, the same protocol as BLE mice and keyboards). <span class="tag ok">tested</span> on iPhone with a Waveshare ESP32-S3-Zero. ESP32-C3 and C6 run the same code but are still <span class="tag">beta</span> until someone confirms them: if you try one, please <a href="https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/issues/new?template=hardware-report.yml">report back</a>.</p>
+      <p><b>ESP32-C3, ESP32-S3 and ESP32-C6</b> have no Classic Bluetooth, so they get a <b>Bluetooth LE HID mouse</b> (HID over GATT, the same protocol as BLE mice and keyboards). <span class="tag ok">tested</span> on iPhone with a Waveshare ESP32-S3-Zero. ESP32-C3 and C6 run the same code but are still <span class="tag">beta</span> until someone confirms them: if you try one, please <a href="https://github.com/Mattboxx/esp32-bt-trigger/issues/new?template=hardware-report.yml">report back</a>.</p>
       <p><b>Not compatible:</b> ESP32-S2 and ESP8266 (no Bluetooth). Any flash size from 2 MB works.</p></details>
     <details><summary>Why a mouse and not a keyboard or a "beacon"?</summary>
       <p>The Shortcuts "Bluetooth" automation only lists accessories paired in Settings, and iOS only pairs certain device types from there: audio, keyboards, mice, game controllers. A plain BLE beacon never shows up. A keyboard would hide your on-screen keyboard while connected. A mouse has no side effects except an optional on-screen pointer.</p></details>
@@ -378,8 +378,8 @@ esptool.py --port &lt;PORT&gt; write_flash 0x0 bt-trigger-esp32.factory.bin</cod
         <h2>Free, and staying that way</h2>
         <p>No ads, no accounts, no paid features. A commercial smart button costs $30–40 and needs its own app.
           If this saved you that (or an afternoon of fighting Bluetooth stacks), you can chip in for new test boards and iOS updates.</p>
-        <p class="small">Not in a position to donate? A <a href="https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger">⭐ on GitHub</a>
-          or a <a href="https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/issues">hardware test report</a> helps just as much.</p>
+        <p class="small">Not in a position to donate? A <a href="https://github.com/Mattboxx/esp32-bt-trigger">⭐ on GitHub</a>
+          or a <a href="https://github.com/Mattboxx/esp32-bt-trigger/issues">hardware test report</a> helps just as much.</p>
       </div>
       <div class="support-buttons">
         <a class="btn kofi" href="https://ko-fi.com/mattboxx" target="_blank" rel="noopener">☕ Buy me a coffee</a>
@@ -391,7 +391,7 @@ esptool.py --port &lt;PORT&gt; write_flash 0x0 bt-trigger-esp32.factory.bin</cod
 
 <footer class="foot">
   <div class="wrap">
-    <p>ESP32 BT Trigger · MIT License · <a href="https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger">GitHub</a> ·
+    <p>ESP32 BT Trigger · MIT License · <a href="https://github.com/Mattboxx/esp32-bt-trigger">GitHub</a> ·
       <a href="https://ko-fi.com/mattboxx">Ko-fi</a> · <a href="https://github.com/sponsors/Mattboxx">Sponsor</a> ·
       flashing by <a href="https://github.com/espressif/esptool-js">esptool-js</a> (Apache-2.0).
       Not affiliated with Apple or Espressif. iPhone and Shortcuts are trademarks of Apple Inc.</p>
@@ -409,7 +409,7 @@ esptool.py --port &lt;PORT&gt; write_flash 0x0 bt-trigger-esp32.factory.bin</cod
       <a class="sd-opt" href="https://github.com/sponsors/Mattboxx" target="_blank" rel="noopener">
         <span class="sd-ico">♥</span><span><b>GitHub Sponsors</b><small>Monthly or one-time, with your GitHub account.</small></span></a>
     </div>
-    <p class="sd-free">Can't donate? A <a href="https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger">⭐ on GitHub</a> helps just as much.</p>
+    <p class="sd-free">Can't donate? A <a href="https://github.com/Mattboxx/esp32-bt-trigger">⭐ on GitHub</a> helps just as much.</p>
   </form>
 </dialog>
 </body>
