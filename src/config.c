@@ -40,8 +40,8 @@ static void set_defaults(btt_config_t *c)
     c->led_active_low      = false;
     c->led_brightness      = 32;
     c->button_gpio         = DEFAULT_BUTTON_GPIO;
-    c->trigger_mode        = BTT_EDITION_PIN ? TRIGGER_SWITCH : TRIGGER_ALWAYS;
-    c->trigger_gpio        = BTT_EDITION_PIN ? BTT_PIN_DEFAULT_GPIO : -1;
+    c->trigger_mode        = TRIGGER_ALWAYS;
+    c->trigger_gpio        = -1;
     c->trigger_active_high = false;
     c->trigger_pull        = PULL_AUTO;
     c->debounce_ms         = 50;

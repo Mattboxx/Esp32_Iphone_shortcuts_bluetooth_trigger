@@ -26,15 +26,6 @@ extern "C" {
 /* Firmware version shown in the logs and in the web flasher. */
 #define BTT_FW_VERSION       "2.0.0"
 
-/* Edition = default trigger when no settings were written by the web flasher.
- *   power edition (default): connect whenever powered
- *   pin edition (-DBTT_EDITION_PIN=1): connect while GPIO4 is pulled to GND */
-#ifndef BTT_EDITION_PIN
-#define BTT_EDITION_PIN      0
-#endif
-#define BTT_EDITION_NAME     (BTT_EDITION_PIN ? "pin" : "power")
-#define BTT_PIN_DEFAULT_GPIO 4      /* free and non-strapping on ESP32/S3/C3/C6 */
-
 typedef enum {
     TRIGGER_ALWAYS = 0,   /* connect whenever powered (classic use)         */
     TRIGGER_SWITCH = 1,   /* connected while an input pin is active         */

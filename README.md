@@ -30,19 +30,16 @@ Two minutes, nothing to install, no code to edit. (Chrome or Edge on a computer.
 
 It's the missing *"when this turns on, do that on my phone"* building block.
 
-## Two editions
+## Two ways to trigger it
 
-| | ⚡ **Power-on edition** | 📍 **Pin edition** |
+| | ⚡ **When it gets power** | 📍 **When a pin is activated** |
 |---|---|---|
-| Connects when… | the board gets power | a pin you choose is activated |
-| Wiring | none: power it from what you want to detect | a switch / relay / button / sensor between the pin and GND |
+| Connects when… | the board gets power | a pin you choose is active (switch) or pressed (button) |
+| Wiring | none: power it from what you want to detect | a switch / relay / button / sensor on any GPIO |
 | Typical use | scooter, car, lamp, monitor, 3D printer | door reed switch, push button, alarm or relay output |
-| Default without the web installer | always on | GPIO4 connected to GND |
 
-Same firmware, different defaults: you can switch edition later from the web installer
-with **Save settings only**. The pin edition works as a *switch* (connected while the pin
-is active, so you get both "connected" and "disconnected" automations) or as a *button*
-(each press connects for N seconds). Until a phone is paired the board stays visible,
+One firmware does both: pick the mode in the web installer, and change it later with
+**Save settings only**. With a pin trigger the board stays visible until a phone is paired,
 so you can pair it before wiring anything.
 
 ## How it works
@@ -88,11 +85,11 @@ rewrites them in a second without touching the pairing.
 | Setting | What it does |
 |---|---|
 | **Bluetooth name** | What you'll see in iPhone Settings and in Shortcuts (up to 29 bytes). |
-| **Edition / trigger** | **Power-on**: connect whenever powered. **Pin, switch**: connected while the input pin is active (reed switch, relay). **Pin, button**: a press connects for N seconds, then disconnects. |
-| **Input pin** *(pin edition)* | Any safe GPIO of your chip (flash pins are hidden). |
-| **Active level** *(pin edition)* | Triggered when the pin reads **LOW** or **HIGH**. |
-| **Internal resistor** *(pin edition)* | **Pull-up**, **pull-down** or **none** (for sensor/relay outputs that drive the pin, or an external resistor). The installer explains the wiring and warns about combinations that would float or stay always on. |
-| **Debounce** *(pin edition)* | Ignore glitches shorter than N ms (10–5000, default 50). Raise it for bouncy reed switches or relays. |
+| **Trigger** | **Power**: connect whenever powered. **Pin, switch**: connected while the input pin is active (reed switch, relay). **Pin, button**: a press connects for N seconds, then disconnects. |
+| **Input pin** *(pin trigger)* | Any safe GPIO of your chip (flash pins are hidden). |
+| **Active level** *(pin trigger)* | Triggered when the pin reads **LOW** or **HIGH**. |
+| **Internal resistor** *(pin trigger)* | **Pull-up**, **pull-down** or **none** (for sensor/relay outputs that drive the pin, or an external resistor). The installer explains the wiring and warns about combinations that would float or stay always on. |
+| **Debounce** *(pin trigger)* | Ignore glitches shorter than N ms (10–5000, default 50). Raise it for bouncy reed switches or relays. |
 | **Keep connected after release** *(switch)* | Stay connected N seconds after the pin goes idle, so a door that opens and closes quickly still fires. |
 | **Duration** *(button)* | How long each press keeps the iPhone connected (default 10 s; under ~3 s the iPhone may not finish connecting). |
 | **Status LED** | None, normal LED or RGB (WS2812/SK6812). Fast blink = ready to pair, slow blink = looking for the iPhone, solid = connected. |
@@ -124,8 +121,8 @@ pip install esptool
 esptool.py --port <PORT> write_flash 0x0 bt-trigger-esp32.factory.bin
 ```
 
-Default settings apply: name `ESP32-BT-Trigger`, LED on GPIO2 (ESP32). The `-pin` files are the
-pin edition (trigger: GPIO4 to GND), the others the power-on edition.
+Default settings apply: name `ESP32-BT-Trigger`, connects whenever powered, LED on GPIO2 (ESP32).
+For a pin trigger, connect the board to the web installer afterwards and use **Save settings only**.
 See [`firmware/README.md`](firmware/README.md).
 </details>
 

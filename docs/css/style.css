@@ -224,16 +224,9 @@ pre.cmd { background: var(--surface); border: 1px solid var(--border); border-ra
 .wiring b { color: var(--text); }
 .hint.warn { color: var(--warn); }
 
-/* ---------- editions ---------- */
+/* ---------- trigger modes ---------- */
 .ed-title { margin-top: 28px; font-size: 1.2rem; }
 .ed-cards p { color: var(--muted); margin: 0; font-size: .95rem; }
-.editions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0 0; }
-@media (max-width: 600px) { .editions { grid-template-columns: 1fr; } }
-.edition { display: flex; gap: 12px; align-items: flex-start; border: 2px solid var(--border); border-radius: var(--radius); padding: 16px; cursor: pointer; background: var(--surface); }
-.edition:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
-.edition input { margin-top: 5px; accent-color: var(--accent); }
-.edition b { display: block; font-size: 1.05rem; }
-.edition small { color: var(--muted); font-size: .9rem; }
 
 /* ---------- support (visible, never in the way) ---------- */
 .topbar nav .support-link { color: #d4537e; font-weight: 600; border: 1px solid color-mix(in srgb, #d4537e 35%, transparent); border-radius: 99px; padding: 2px 10px; }

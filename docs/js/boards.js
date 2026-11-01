@@ -82,7 +82,9 @@ export const BOARDS = [
   b("s3-devkitc", "ESP32-S3", "Espressif ESP32-S3-DevKitC-1", rgb(48), 0, "RGB LED is GPIO48 on v1.0 boards, GPIO38 on v1.1."),
   b("s3-xiao", "ESP32-S3", "Seeed XIAO ESP32-S3", plain(21, true), 0),
   b("s3-atoms3-lite", "ESP32-S3", "M5Stack AtomS3 Lite", rgb(35), 41),
-  b("s3-supermini", "ESP32-S3", "ESP32-S3 SuperMini", rgb(48), 0),
+  b("s3-supermini", "ESP32-S3", "ESP32-S3 SuperMini", rgb(48), 0, "If the LED stays dark, try a plain LED on GPIO48 or check your board's pinout."),
+  b("s3-zero", "ESP32-S3", "Waveshare ESP32-S3-Zero / S3-Mini", rgb(21), 0),
+  b("s3-lolin-mini", "ESP32-S3", "LOLIN S3 Mini", rgb(47), 0),
   b("s3-generic", "ESP32-S3", "Other ESP32-S3 board", noLed, 0),
 
   // ---- ESP32-C6: BLE ----

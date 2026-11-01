@@ -19,13 +19,12 @@ function compile(name, extra = []) {
     join(here, "test_config.c"), join(root, "src", "config.c"), "-o", out]);
   return out;
 }
-const exe = compile("test_config");                                  // power-on edition
-const exePin = compile("test_config_pin", ["-DBTT_EDITION_PIN=1"]);  // pin edition
+const exe = compile("test_config");
 
-function firmwareParse(bytes, bin = exe) {
+function firmwareParse(bytes) {
   const f = join(tmp, "blob.bin");
   writeFileSync(f, bytes);
-  return JSON.parse(execFileSync(bin, [f], { stdio: ["ignore", "pipe", "ignore"] }).toString());
+  return JSON.parse(execFileSync(exe, [f], { stdio: ["ignore", "pipe", "ignore"] }).toString());
 }
 
 let n = 0;
@@ -56,17 +55,10 @@ test("blank flash (0xFF) -> firmware defaults", () => {
   assert.equal(decodeConfig(new Uint8Array(64).fill(0xff)), null);
 });
 
-test("pin edition: blank flash -> switch trigger on GPIO4, active LOW", () => {
-  const fw = firmwareParse(new Uint8Array(64).fill(0xff), exePin);
-  assert.equal(fw.fromFlash, false);
+test("pin trigger written by the web flasher overrides the power-on default", () => {
+  const fw = firmwareParse(encodeConfig({ ...full, triggerMode: TRIGGER.switch, triggerGpio: 4 }));
   assert.equal(fw.triggerMode, 1);
   assert.equal(fw.triggerGpio, 4);
-  assert.equal(fw.triggerActiveHigh, false);
-});
-
-test("pin edition: settings written by the web flasher still win", () => {
-  const fw = firmwareParse(encodeConfig({ ...full, triggerMode: TRIGGER.always }), exePin);
-  assert.equal(fw.triggerMode, 0);
 });
 
 test("every resistor option survives the round trip", () => {

@@ -24,7 +24,6 @@ const state = {
   hasOurFirmware: false, // partition table contains "btcfg"
   fwCache: new Map(),
   busy: false,
-  edition: "power",      // "power" | "pin"
 };
 
 /* ------------------------------------------------------------------ log */
@@ -59,7 +58,7 @@ async function loadManifest() {
 function renderDownloads() {
   const tb = $("dl-table").querySelector("tbody");
   if (!state.manifest) {
-    tb.innerHTML = `<tr><td colspan="5">Firmware files not found. Get them from the
+    tb.innerHTML = `<tr><td colspan="4">Firmware files not found. Get them from the
       <a href="https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/releases">Releases page</a>.</td></tr>`;
     return;
   }
@@ -69,33 +68,24 @@ function renderDownloads() {
     const bt = b.transport === "classic"
       ? 'Classic HID <span class="tag ok">tested</span>'
       : 'BLE HID <span class="tag">beta</span>';
-    const ed = (b.edition || "power") === "pin" ? "📍 Pin" : "⚡ Power-on";
-    tr.innerHTML = `<td>${b.chip}</td><td>${ed}</td><td>${bt}</td>
+    tr.innerHTML = `<td>${b.chip}</td><td>${bt}</td>
       <td><a href="firmware/${b.file}" download>${b.file}</a></td>
       <td>${(b.size / 1024).toFixed(0)} KB</td>`;
     tb.appendChild(tr);
   }
 }
 
-function buildFor(chip, edition = state.edition) {
-  return state.manifest?.builds.find((b) => b.chip === chip && (b.edition || "power") === edition) || null;
+function buildFor(chip) {
+  return state.manifest?.builds.find((b) => b.chip === chip) || null;
 }
 
-/* ------------------------------------------------------------- edition */
-function setEdition(ed, fromBoard = false) {
-  state.edition = ed;
-  const radio = document.querySelector(`input[name="edition"][value="${ed}"]`);
-  if (radio) radio.checked = true;
-  const pin = ed === "pin";
-  $("trigger-fieldset").hidden = !pin;
-  $("choice-always").hidden = true;          // "always" is the power edition itself
-  const cur = document.querySelector('input[name="trigger"]:checked');
-  if (pin && (!cur || cur.value === "0")) {
-    document.querySelector('input[name="trigger"][value="1"]').checked = true;
-  }
-  if (pin && !fromBoard && $("trigger-gpio").value === "-1") setPin($("trigger-gpio"), 4);
+/* ------------------------------------------------------------ trigger mode */
+function setMode(mode, fromBoard = false) {
+  const r = document.querySelector(`input[name="trigger"][value="${mode}"]`);
+  if (r) r.checked = true;
+  // Picking a pin mode with no pin yet: suggest GPIO4 (free on every supported chip).
+  if (mode !== TRIGGER.always && !fromBoard && $("trigger-gpio").value === "-1") setPin($("trigger-gpio"), 4);
   refreshForm();
-  renderFwInfo();
 }
 
 async function fetchFirmware(build) {
@@ -148,8 +138,7 @@ function applyBoardPreset(id) {
 }
 
 function readForm() {
-  const picked = Number(document.querySelector('input[name="trigger"]:checked').value);
-  const trig = state.edition === "power" ? TRIGGER.always : Math.max(TRIGGER.switch, picked);
+  const trig = Number(document.querySelector('input[name="trigger"]:checked').value);
   return {
     name: $("name").value.trim() || DEFAULTS.name,
     reconnectS: Number($("reconnect").value) || DEFAULTS.reconnectS,
@@ -192,7 +181,7 @@ function writeForm(s) {
   $("trigger-pull").value = String(pull);
   $("debounce").value = s.debounceMs || DEFAULTS.debounceMs;
   $("hold").value = s.holdS || 0;
-  setEdition(s.triggerMode === TRIGGER.always ? "power" : "pin", true);
+  setMode(s.triggerMode, true);
 }
 
 /** Validate and update dependent fields. Returns an error string or "". */
@@ -299,9 +288,8 @@ function renderFwInfo() {
   const transportLabel = c.transport === "classic"
     ? 'Classic Bluetooth HID <span class="tag ok">tested on iPhone</span>'
     : 'Bluetooth LE HID <span class="tag">beta: please report if it works</span>';
-  const ed = state.edition === "pin" ? "📍 Pin edition" : "⚡ Power-on edition";
   el.innerHTML = build
-    ? `Firmware <b>v${state.manifest.version}</b> · <b>${ed}</b> for <b>${c.label}</b> · ${transportLabel}` +
+    ? `Firmware <b>v${state.manifest.version}</b> for <b>${c.label}</b> · ${transportLabel}` +
       (state.hasOurFirmware ? "<br>Your board already runs BT Trigger: you can update it or just save the settings." : "")
     : `<span class="status err">No firmware file found for ${c.label}.</span>`;
   updateButtons();
@@ -563,8 +551,8 @@ function init() {
     }
     refreshForm();
   });
-  document.querySelectorAll('input[name="edition"]').forEach((r) =>
-    r.addEventListener("change", (e) => setEdition(e.target.value)));
+  document.querySelectorAll('input[name="trigger"]').forEach((r) =>
+    r.addEventListener("change", (e) => setMode(Number(e.target.value))));
   $("settings").addEventListener("input", refreshForm);
   $("settings").addEventListener("change", refreshForm);
   $("forget").addEventListener("change", () => {
@@ -572,11 +560,15 @@ function init() {
       ? "The board will forget every iPhone. On each iPhone: tap the device → Forget This Device → pair again."
       : "Leave it off to keep your iPhone paired across updates.";
   });
-  setEdition(new URLSearchParams(location.search).get("edition") === "pin" ? "pin" : "power");
+  // Deep links for campaigns: ?mode=power|switch|button (old ?edition=pin = switch).
+  const q = new URLSearchParams(location.search);
+  const mode = { power: TRIGGER.always, switch: TRIGGER.switch, button: TRIGGER.pulse }[q.get("mode")] ??
+    (q.get("edition") === "pin" ? TRIGGER.switch : TRIGGER.always);
+  setMode(mode);
   loadManifest().then(() => updateButtons());
 }
 
 init();
 
 // Exposed for automated tests only.
-window.__bttTest = { readForm, writeForm, refreshForm, populateForChip, applyBoardPreset, setEdition, buildFor, state };
+window.__bttTest = { readForm, writeForm, refreshForm, populateForChip, applyBoardPreset, setMode, buildFor, state };

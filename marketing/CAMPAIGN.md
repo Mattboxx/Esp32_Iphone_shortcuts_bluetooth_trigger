@@ -24,14 +24,20 @@ Se salti questi punti bruci il lancio. Su Reddit e HN il primo post è anche l'u
 5. Crea il tag `v2.0.0` (genera la Release con i binari) e aggiungi al repo:
    description = la tagline sotto, topics = `esp32 iphone shortcuts bluetooth hid ios-automation esp-idf home-assistant`, website = link del sito.
 
-## 0.b Due edizioni = due messaggi, non uno
+## 0.b Un firmware, due messaggi
 
-- **Power-on**: "quando si accende, l'iPhone fa qualcosa" (monopattino, auto, scrivania).
-- **Pin**: "un contatto fisico diventa un'automazione iPhone" (porta, bottone, relè).
-  Link diretto: `…/Esp32_Iphone_shortcuts_bluetooth_trigger/?edition=pin`
+- **All'accensione**: "quando si accende, l'iPhone fa qualcosa" (monopattino, auto, scrivania).
+- **Da pin**: "un contatto fisico diventa un'automazione iPhone" (porta, bottone, relè).
+  Link diretti che preselezionano la modalità: `…/?mode=switch` (interruttore) e `…/?mode=button` (pulsante).
 
-Non mischiarle nello stesso post: un post = un caso d'uso = un'edizione. Il pin edition
-rende di più su r/homeassistant e r/esp32, il power-on su r/shortcuts e sui subreddit veicoli.
+Non mischiarli nello stesso post: un post = un caso d'uso = un link. Il messaggio "pin"
+rende di più su r/homeassistant e r/esp32, quello "accensione" su r/shortcuts e sui subreddit veicoli.
+
+## 0.d Prossimo passo dopo i test: Comandi Rapidi pronti
+
+Pubblica 3 Comandi Rapidi condivisibili (link iCloud) per i casi principali:
+monopattino → apri Maps, scrivania → Concentrazione, porta → notifica / Home Assistant.
+Mettili sul sito nel pannello "Done!". Abbassano la barriera più di qualsiasi funzione nuova.
 
 ## 0.c Donazioni (Ko-fi + GitHub Sponsors)
 

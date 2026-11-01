@@ -199,7 +199,7 @@ void app_main(void)
     ESP_ERROR_CHECK(ret);
 
     btt_config_load(&s_cfg);
-    ESP_LOGI(TAG, "ESP32 BT Trigger v%s (%s edition) - %s", BTT_FW_VERSION, BTT_EDITION_NAME,
+    ESP_LOGI(TAG, "ESP32 BT Trigger v%s - %s", BTT_FW_VERSION,
 #if CONFIG_BT_CLASSIC_ENABLED
              "Classic Bluetooth HID"
 #else

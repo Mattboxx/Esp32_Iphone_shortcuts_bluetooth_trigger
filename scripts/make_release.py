@@ -2,8 +2,7 @@
 """
 Build every firmware variant and produce ready-to-flash files in firmware/:
 
-  firmware/bt-trigger-<chip>.factory.bin       power edition, merged image at 0x0
-  firmware/bt-trigger-<chip>-pin.factory.bin   pin edition (default trigger: GPIO4 to GND)
+  firmware/bt-trigger-<chip>.factory.bin   merged image, write at 0x0
   firmware/manifest.json                    used by the web flasher
 
 Usage:  python scripts/make_release.py            (build + merge)
@@ -35,10 +34,6 @@ def fw_version():
     return re.search(r'#define BTT_FW_VERSION\s+"([^"]+)"', text).group(1)
 
 
-def envname(base, edition):
-    return base if edition == "power" else f"{base}-pin"
-
-
 def run(cmd):
     print("+", " ".join(cmd), flush=True)
     subprocess.check_call(cmd, cwd=ROOT)
@@ -50,12 +45,9 @@ def main():
     version = fw_version()
     manifest = {"version": version, "config_offset": CONFIG_OFFSET, "builds": []}
 
-    jobs = [(base, edition) for base in VARIANTS for edition in ("power", "pin")]
     if build:
-        run(["pio", "run"] + sum((["-e", envname(b, e)] for b, e in jobs), []))
-    for base, edition in jobs:
-        chip, boot_off, transport, family = VARIANTS[base]
-        env = envname(base, edition)
+        run(["pio", "run"] + sum((["-e", env] for env in VARIANTS), []))
+    for env, (chip, boot_off, transport, family) in VARIANTS.items():
         b = ROOT / ".pio" / "build" / env
         name = f"bt-trigger-{env}.factory.bin"
         run([sys.executable, "-m", "esptool", "--chip", chip, "merge_bin",
@@ -67,7 +59,6 @@ def main():
         data = (OUT / name).read_bytes()
         manifest["builds"].append({
             "chip": family,
-            "edition": edition,
             "env": env,
             "transport": transport,
             "file": name,

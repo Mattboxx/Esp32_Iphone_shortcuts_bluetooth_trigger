@@ -105,15 +105,15 @@
       and your on-screen keyboard keeps working (a "keyboard" device would hide it).
       <b>Connecting</b> is the signal; nothing is ever typed or clicked.</p>
 
-    <h3 class="ed-title">Two editions, same firmware</h3>
+    <h3 class="ed-title">Two ways to trigger it</h3>
     <div class="grid2 ed-cards">
       <div class="card">
-        <h3>⚡ Power-on edition</h3>
-        <p>Connects as soon as the board gets power. Wire nothing: just power it from the thing you want to detect (a scooter's USB port, a car socket, a lamp's USB charger).</p>
+        <h3>⚡ When it gets power</h3>
+        <p>Wire nothing: power the board from the thing you want to detect (a scooter's USB port, a car socket, a lamp's USB charger). Power on = connected.</p>
       </div>
       <div class="card">
-        <h3>📍 Pin edition</h3>
-        <p>Always powered, it connects when <b>a pin you choose</b> is activated: a reed switch on a door, a relay, a push button, a sensor output. Works as a switch (connected while active) or as a button (connects for N seconds).</p>
+        <h3>📍 When a pin is activated</h3>
+        <p>The board stays powered and connects when <b>a pin you choose</b> changes: a reed switch on a door, a relay, a push button, a sensor output. You set the pin, level, resistor, debounce and timing.</p>
       </div>
     </div>
   </section>
@@ -127,13 +127,6 @@
       <b>This browser can't talk to USB devices.</b> Open this page in <b>Chrome</b> or <b>Edge</b> on a computer.
       Safari, Firefox and iPhone/iPad don't support Web Serial.
       You can still <a href="#downloads">download the firmware</a> and flash it with esptool.
-    </div>
-
-    <div class="editions" role="radiogroup" aria-label="Edition">
-      <label class="edition"><input type="radio" name="edition" value="power" checked>
-        <span><b>⚡ Power-on edition</b><small>Triggers when the board gets power.</small></span></label>
-      <label class="edition"><input type="radio" name="edition" value="pin">
-        <span><b>📍 Pin edition</b><small>Triggers when a pin you choose is activated.</small></span></label>
     </div>
 
     <ol class="wizard">
@@ -174,14 +167,14 @@
           </div>
 
           <fieldset class="field" id="trigger-fieldset">
-            <legend>How should the pin trigger it?</legend>
+            <legend>When should it trigger?</legend>
             <div class="choices">
-              <label class="choice" id="choice-always"><input type="radio" name="trigger" value="0" checked>
-                <span><b>Whenever it has power</b><small>Power it from what you want to detect: car, scooter, lamp, USB charger.</small></span></label>
+              <label class="choice"><input type="radio" name="trigger" value="0" checked>
+                <span><b>⚡ When it gets power</b><small>Power it from what you want to detect: car, scooter, lamp, USB charger. No wiring.</small></span></label>
               <label class="choice"><input type="radio" name="trigger" value="1">
-                <span><b>While a switch is on</b><small>Reed switch, relay, toggle. Connected while the pin is active, disconnects when it isn't.</small></span></label>
+                <span><b>📍 While a pin is active</b><small>Reed switch, relay, sensor. Connected while the pin is active, disconnects when it isn't.</small></span></label>
               <label class="choice"><input type="radio" name="trigger" value="2">
-                <span><b>When a button is pressed</b><small>Connects for a few seconds, then disconnects. Each press = one trigger.</small></span></label>
+                <span><b>🔘 When a pin is pressed</b><small>Push button. Each press connects for a few seconds, then disconnects.</small></span></label>
             </div>
           </fieldset>
 
@@ -293,7 +286,7 @@
         <li>iPhone → <b>Settings → Bluetooth</b> → tap <b id="done-name">ESP32-BT-Trigger</b> under <i>Other Devices</i>.</li>
         <li><b>Shortcuts → Automation → + → Bluetooth</b> → choose it → <b>Is Connected</b> → <b>Run Immediately</b>.</li>
       </ol>
-      <p id="done-pin" hidden>Pin edition: it stays visible until your iPhone is paired. After that it connects <b>only while the pin is active</b>, so test it by closing the switch / pressing the button.</p>
+      <p id="done-pin" hidden>Pin trigger: it stays visible until your iPhone is paired. After that it connects <b>only while the pin is active</b>, so test it by closing the switch / pressing the button.</p>
       <p id="done-rename" hidden></p>
       <button id="btn-monitor" class="btn ghost small">Show live device log</button>
       <p class="done-donate">Worked? This replaces a $35 smart button. If you'd like to say thanks,
@@ -331,11 +324,11 @@
   <!-- ================= DOWNLOADS ================= -->
   <section id="downloads" class="wrap downloads">
     <h2>Download the firmware</h2>
-    <p>Prefer the command line? Each file is a merged image: write it at offset <code>0x0</code>. Without the web flasher the defaults are used: name <code>ESP32-BT-Trigger</code>; the <b>power-on</b> edition connects whenever powered, the <b>pin</b> edition (<code>-pin</code> files) connects while <b>GPIO4 is connected to GND</b>.</p>
+    <p>Prefer the command line? Each file is a merged image: write it at offset <code>0x0</code>. Without the web flasher the defaults are used: name <code>ESP32-BT-Trigger</code>, connects whenever powered. To use a pin trigger, connect the board to this page later and click <b>Save settings only</b>.</p>
     <div class="table-wrap">
       <table id="dl-table">
-        <thead><tr><th>Chip</th><th>Edition</th><th>Bluetooth</th><th>File</th><th>Size</th></tr></thead>
-        <tbody><tr><td colspan="5">Loading…</td></tr></tbody>
+        <thead><tr><th>Chip</th><th>Bluetooth</th><th>File</th><th>Size</th></tr></thead>
+        <tbody><tr><td colspan="4">Loading…</td></tr></tbody>
       </table>
     </div>
     <pre class="cmd"><code>pip install esptool
@@ -345,9 +338,9 @@ esptool.py --port &lt;PORT&gt; write_flash 0x0 bt-trigger-esp32.factory.bin</cod
   <!-- ================= FAQ ================= -->
   <section id="faq" class="wrap faq">
     <h2>FAQ</h2>
-    <details><summary>Power-on or pin edition: which one do I need?</summary>
-      <p><b>Power-on</b> if the thing you want to detect can power the board (USB port, 12 V socket with a USB adapter, a lamp's charger). <b>Pin</b> if the board is always powered and you want to react to a contact: door reed switch, relay, button, the output of another device. It's the same firmware with different defaults, so you can switch later with <b>Save settings only</b>.</p>
-      <p>In the pin edition the board stays visible until a phone is paired, so you can pair it before wiring anything. After that it only connects when the pin is active.</p></details>
+    <details><summary>Power-on or pin trigger: which one do I need?</summary>
+      <p><b>Power-on</b> if the thing you want to detect can power the board (USB port, 12 V socket with a USB adapter, a lamp's charger). <b>Pin</b> if the board is always powered and you want to react to a contact: door reed switch, relay, button, the output of another device. It's one firmware: you can switch later with <b>Save settings only</b>, in a second.</p>
+      <p>With a pin trigger the board stays visible until a phone is paired, so you can pair it before wiring anything. After that it only connects when the pin is active.</p></details>
     <details><summary>Which boards work?</summary>
       <p><b>Any original ESP32</b> (DevKit, WROOM, WROVER, PICO, D1 mini32, M5 Atom, ESP32-CAM, TTGO…), including single-core and 26 MHz-crystal variants. It uses <b>Classic Bluetooth HID</b>, the mode this project has been tested with on iPhone.</p>
       <p><b>ESP32-C3, ESP32-S3 and ESP32-C6</b> have no Classic Bluetooth, so they get a <b>Bluetooth LE HID mouse</b> (HID over GATT, the same protocol as BLE mice and keyboards). <span class="tag">beta</span>: it builds and follows Espressif's HID reference, but it has not been confirmed on an iPhone yet. If you try it, please <a href="https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/issues">report back</a>.</p>
