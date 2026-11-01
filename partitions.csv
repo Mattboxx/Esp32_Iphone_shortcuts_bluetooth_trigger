@@ -1,0 +1,7 @@
+# ESP32 BT Trigger - fits in 2 MB flash, so it runs on 2/4/8/16 MB boards.
+# "btcfg" holds the settings written by the web flasher (see src/config.c).
+# Name,   Type, SubType, Offset,   Size
+nvs,      data, nvs,     0x9000,   0x6000
+phy_init, data, phy,     0xf000,   0x1000
+factory,  app,  factory, 0x10000,  0x170000
+btcfg,    0x40, 0x00,    0x180000, 0x1000

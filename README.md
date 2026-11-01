@@ -1,115 +1,185 @@
 # ESP32 BT Trigger
 
-A tiny ESP32 firmware that acts as a **Bluetooth trigger for iPhone Shortcuts
-automations**.
+**When it powers on, your iPhone runs a Shortcut.**
 
-The ESP32 presents itself to your iPhone as a **Classic Bluetooth** device (a
-mouse). It never sends any input — the **act of connecting** is the trigger: iOS
-runs a Shortcuts automation set to *"When &lt;device&gt; connects"*. After a reboot
-or a dropped link, the ESP32 **reconnects on its own** to the last paired iPhone.
+A tiny open-source firmware that turns a $3 ESP32 board into a **Bluetooth trigger
+for iPhone Shortcuts automations**. No app on the phone, no Wi-Fi, no cloud, no NFC
+tag to tap. Power it up → it connects → iOS runs your automation.
 
-### What you can do with it
+[![Firmware](https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/actions/workflows/firmware.yml/badge.svg)](https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/actions/workflows/firmware.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-support-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/mattboxx)
 
-Power the ESP32 from something you switch on (a scooter, bike, car, desk lamp,
-3D-printer, door…). When it powers up it connects to your iPhone, and your
-Shortcuts automation fires automatically — for example:
+### ⚡ [Install it from your browser →](https://mattboxx.github.io/Esp32_Iphone_shortcuts_bluetooth_trigger/)
 
-- open a navigation / dashboard app,
-- toggle a Focus mode or Do Not Disturb,
-- start a timer, set the volume, send a message, run any shortcut.
-
-It's the "when this turns on, do that on my phone" building block, done over
-plain Bluetooth with no extra app on the phone.
-
-> **Why a mouse and not a keyboard?** While an HID *keyboard* is connected, iOS
-> hides the on-screen keyboard. A pointing device does not, so your on-screen
-> keyboard keeps working (iOS shows the AssistiveTouch pointer instead).
->
-> **Why Classic Bluetooth and not BLE?** This project is for people who want a
-> Classic-BT HID device recognized by iPhone. (A BLE HID would also work; this
-> one deliberately uses Classic BT via ESP-IDF.) Note: Classic **SPP** (serial)
-> does *not* work with iPhone — Classic **HID** does, which is what this uses.
+Plug the board into your computer, pick a name and options, click **Install**.
+Two minutes, nothing to install, no code to edit. (Chrome or Edge on a computer.)
 
 ---
 
-## Change the name
+## What you can do with it
 
-The Bluetooth name is defined in one place, in [`src/main.cpp`](src/main.cpp):
+| Power it from… | …and your iPhone automatically… |
+|---|---|
+| 🛴 Scooter, e-bike, car ignition | opens navigation / your dashboard app, starts a ride timer |
+| 🖥️ Desk lamp, monitor, USB hub | turns on the *Work* Focus, starts a playlist |
+| 🖨️ 3D printer, workshop tools | starts a timer, logs the session, notifies you |
+| 🚪 Reed switch on a door *(switch mode)* | sends you a notification, calls a webhook |
+| 🔘 A push button *(pulse mode)* | runs any shortcut with one press |
+| 🏠 Anything | calls **Home Assistant**, HomeKit scenes or webhooks via Shortcuts |
 
-```c
-#define DEVICE_NAME  "ESP32-BT-Trigger"
-```
+It's the missing *"when this turns on, do that on my phone"* building block.
 
-Change it, rebuild, re-flash. After a name change, "Forget This Device" on the
-iPhone and pair again.
+## Two editions
 
----
+| | ⚡ **Power-on edition** | 📍 **Pin edition** |
+|---|---|---|
+| Connects when… | the board gets power | a pin you choose is activated |
+| Wiring | none: power it from what you want to detect | a switch / relay / button / sensor between the pin and GND |
+| Typical use | scooter, car, lamp, monitor, 3D printer | door reed switch, push button, alarm or relay output |
+| Default without the web installer | always on | GPIO4 connected to GND |
 
-## Hardware
+Same firmware, different defaults: you can switch edition later from the web installer
+with **Save settings only**. The pin edition works as a *switch* (connected while the pin
+is active, so you get both "connected" and "disconnected" automations) or as a *button*
+(each press connects for N seconds). Until a phone is paired the board stays visible,
+so you can pair it before wiring anything.
 
-- A **classic ESP32** with Classic Bluetooth — **not** an ESP32-C3/C6/H2 (those
-  are BLE-only). Set `board` in `platformio.ini` (default `wemos_d1_mini32`; a
-  generic module also works as `esp32dev`).
-- A USB cable.
+## How it works
 
----
+The ESP32 presents itself to the iPhone as a **Bluetooth mouse that never moves**.
+The Shortcuts app can run an automation *"When &lt;device&gt; is connected"* (or
+*disconnected*). The act of **connecting** is the trigger. Nothing is ever typed or
+clicked.
 
-## Build & flash (PlatformIO)
+- **Why a mouse?** iOS only lets you pair a few device types from Settings (audio,
+  keyboards, mice, controllers). Plain BLE beacons never appear in the list, so they
+  can't trigger Shortcuts. A *keyboard* would hide your on-screen keyboard while
+  connected. A mouse has no side effect (at most an AssistiveTouch pointer).
+- **Reconnects by itself.** After a reboot or a dropped link the board calls back
+  the last paired iPhone, then any other paired phone.
+
+## Compatibility
+
+| Chip | Bluetooth mode | Status |
+|---|---|---|
+| **ESP32** (original): DevKit, WROOM-32, WROVER, PICO-D4, D1 mini32, M5 Atom, ESP32-CAM, TTGO… incl. single-core & 26 MHz crystal variants | Classic BT HID | ✅ Tested on iPhone |
+| **ESP32-C3**: SuperMini, XIAO C3, DevKitM, LOLIN C3 Mini, M5Stamp C3 | BLE HID (HID over GATT) | 🧪 Beta, not yet confirmed on iPhone |
+| **ESP32-S3**: DevKitC, XIAO S3, AtomS3, S3 SuperMini | BLE HID (HID over GATT) | 🧪 Beta, not yet confirmed on iPhone |
+| **ESP32-C6**: DevKitC/M, XIAO C6 | BLE HID (HID over GATT) | 🧪 Beta, not yet confirmed on iPhone |
+| ESP32-S2, ESP8266 | no Bluetooth | ❌ Not possible |
+| ESP32-H2 / C2 / C5 | BLE | 🔜 Planned |
+
+Any flash size **from 2 MB** works. If you test a beta chip, please
+[open an issue](https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/issues)
+with the result, even if it's just "works on my C3 SuperMini".
+
+> The BLE variant is a real HID mouse over Bluetooth LE (the same protocol BLE mice
+> and keyboards use), **not** a beacon. It follows Espressif's HID reference
+> implementation and builds in CI, but nobody has confirmed it on an iPhone yet. That
+> is why it is marked beta.
+
+## Settings (no code to edit)
+
+Everything is set in the [web installer](https://mattboxx.github.io/Esp32_Iphone_shortcuts_bluetooth_trigger/).
+Connect the board again later: your settings are read back, and **Save settings only**
+rewrites them in a second without touching the pairing.
+
+| Setting | What it does |
+|---|---|
+| **Bluetooth name** | What you'll see in iPhone Settings and in Shortcuts (up to 29 bytes). |
+| **Edition / trigger** | **Power-on**: connect whenever powered. **Pin, switch**: connected while the input pin is active (reed switch, relay). **Pin, button**: a press connects for N seconds, then disconnects. |
+| **Status LED** | None, normal LED or RGB (WS2812/SK6812). Fast blink = ready to pair, slow blink = looking for the iPhone, solid = connected. |
+| **"Forget phones" button** | Hold 5 s to wipe every pairing (default: the BOOT button). |
+| **Pairing window** | Only accept *new* phones in the first 60 s / 3 min after power-on, so strangers can't see or pair it. Paired phones always reconnect. |
+| **Board preset** | Pre-fills LED and button pins for 20+ popular boards. |
+
+## Quick start
+
+1. **Flash:** open the [web installer](https://mattboxx.github.io/Esp32_Iphone_shortcuts_bluetooth_trigger/), click **Connect**, choose your settings, click **Install**.
+2. **Pair (once):** iPhone → **Settings → Bluetooth** → tap your device under *Other Devices*. No PIN.
+3. **Automate:** **Shortcuts → Automation → + → Bluetooth** → choose your device →
+   **Is Connected** → **Run Immediately** → add your actions.
+
+Every time the board powers up (or the switch/button fires) and connects, the automation runs.
+
+<details>
+<summary><b>Flash without the browser (esptool)</b></summary>
+
+Download the file for your chip from [`firmware/`](firmware) or the
+[Releases](https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/releases)
+page. Each file is a merged image written at `0x0`:
 
 ```bash
-pio run                 # build
-pio run -t erase        # (recommended on first flash) wipe old pairings
-pio run -t upload       # flash the ESP32
-pio device monitor      # serial logs at 115200 baud
+pip install esptool
 ```
 
-> The serial port is auto-detected; set `upload_port` / `monitor_port` in
-> `platformio.ini` if you have several devices.
->
-> This project uses **ESP-IDF 5.3.1** with **CMake 3.30** (see `platformio.ini`):
-> the *Classic BT HID Device* role is disabled in the precompiled Arduino
-> libraries, so ESP-IDF is required. The first build downloads the SDK and is slow.
+```bash
+esptool.py --port <PORT> write_flash 0x0 bt-trigger-esp32.factory.bin
+```
 
----
+Default settings apply: name `ESP32-BT-Trigger`, LED on GPIO2 (ESP32). The `-pin` files are the
+pin edition (trigger: GPIO4 to GND), the others the power-on edition.
+See [`firmware/README.md`](firmware/README.md).
+</details>
 
-## iPhone setup
+<details>
+<summary><b>Build from source (PlatformIO)</b></summary>
 
-### 1) Pair (once)
+```bash
+pio run -e esp32          # or esp32c3 / esp32s3 / esp32c6
+```
 
-1. Flash the firmware and power the ESP32.
-2. iPhone → **Settings → Bluetooth** → tap the device under **Other Devices**
-   (pairs with no code, "Just Works") → it moves to **My Devices**.
+```bash
+pio run -e esp32 -t upload && pio device monitor
+```
 
-### 2) Create the automation (Shortcuts app)
+```bash
+python scripts/make_release.py    # all variants + merged images + manifest
+```
 
-1. **Shortcuts** app → **Automation** tab → **+** → **Create Personal Automation**.
-2. **Bluetooth** → **Device** → select your device → **Next**.
-3. Add the actions you want → **Next** → turn **off** *"Ask Before Running"* → **Done**.
+ESP-IDF 5.3.1 is used (not Arduino): the Classic BT *HID Device* role is disabled in
+the precompiled Arduino libraries. The first build downloads the SDK and is slow.
+</details>
 
-From now on, every time the ESP32 powers up and connects, the automation runs.
-Very useful with Home Assistant Automations.
----
+## Troubleshooting
 
-## Notes
+- **Not in the Bluetooth list:** the device is probably already paired to another
+  phone or the pairing window has closed. Power-cycle it, or hold the reset button 5 s.
+- **Paired but the automation doesn't run:** in Shortcuts, make sure the automation
+  is set to **Run Immediately** and the device is selected in the Bluetooth trigger.
+- **After re-flashing it won't connect:** on the iPhone tap the device → *Forget This
+  Device*, then pair again (needed whenever the board's pairings were wiped or the name changed).
+- **Logs:** the web installer has a *Show live device log* button, or use
+  `pio device monitor` at 115200 baud. Red `BT_BTM` / `BT_HCI` lines are normal bluedroid noise.
 
-- **Reconnect** is handled by the ESP32: it calls back the last paired iPhone
-  (from the saved-devices list, which persists across reboots). Interval:
-  `RECONNECT_PERIOD_S` in `src/main.cpp`.
-- **On-screen pointer**: with a mouse iOS shows the AssistiveTouch cursor; the
-  on-screen keyboard remains usable.
-- The red/yellow `BT_BTM` / `BT_HCI` lines during connection are normal bluedroid
-  log noise, not real errors.
+## Project layout
 
----
+| Path | Purpose |
+|---|---|
+| `src/main.c` | Trigger modes, reset button, pairing window, status LED |
+| `src/transport_classic.c` | Classic Bluetooth HID mouse + active reconnect (ESP32) |
+| `src/transport_ble.c` | BLE HID mouse (ESP32-S3/C3/C6) |
+| `src/config.c` | Reads settings from the `btcfg` flash partition |
+| `partitions.csv` | 2 MB layout with the 4 KB `btcfg` settings partition at `0x180000` |
+| `docs/` | Website + web installer (GitHub Pages) |
+| `test/host/` | Runs the real firmware settings parser against the web installer's output |
+| `scripts/make_release.py` | Builds every variant and the merged images |
 
-## How it's built
+## Support the project
 
-| File | Purpose |
-|------|---------|
-| `src/main.cpp` | Firmware: Classic BT HID mouse + auto-reconnect |
-| `sdkconfig.defaults` | Re-enables Classic BT + HID Device in the ESP-IDF stack |
-| `platformio.ini` | ESP-IDF 5.3.1, CMake 3.30 |
+It's free, MIT licensed, with no paid features, and it will stay that way. A commercial
+smart button costs $30–40 and needs its own app. If this saved you that, you can help pay
+for new test boards and iOS update testing:
+
+[![Ko-fi](https://img.shields.io/badge/☕_Buy_me_a_coffee-Ko--fi-ff5e5b)](https://ko-fi.com/mattboxx)
+[![GitHub Sponsors](https://img.shields.io/badge/♥_Sponsor-GitHub-db61a2)](https://github.com/sponsors/Mattboxx)
+
+Not in a position to donate? A ⭐ or a hardware test report in the
+[issues](https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/issues) helps just as much.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE). The web installer bundles
+[esptool-js](https://github.com/espressif/esptool-js) (Apache-2.0).
+Not affiliated with Apple or Espressif.

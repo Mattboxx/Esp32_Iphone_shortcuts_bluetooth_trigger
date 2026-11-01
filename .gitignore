@@ -4,6 +4,10 @@
 # IDE: contains local absolute machine paths
 .vscode/
 
-# Generated per-env sdkconfig (sdkconfig.defaults IS versioned)
+# Generated per-env sdkconfig (the sdkconfig.defaults* files ARE versioned)
 sdkconfig.*
 !sdkconfig.defaults
+!sdkconfig.defaults.*
+
+# Site assembly
+_site/
