@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Only this site's own files may run or load: no CDN, no third-party scripts. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>ESP32 BT Trigger</title>
   <meta name="description" content="Turn a $3 ESP32 into a Bluetooth trigger for iPhone Shortcuts. When it powers on, your automation runs. Configure and flash it from your browser in 2 minutes. No app, no cloud, no Wi-Fi.">
   <meta property="og:title" content="ESP32 BT Trigger – a Bluetooth trigger for iPhone Shortcuts">
@@ -153,7 +156,7 @@
       <!-- STEP 2 -->
       <li class="card" id="step-settings" aria-disabled="true">
         <header><span class="num">2</span><h3>Choose your settings</h3></header>
-        <form id="settings" autocomplete="off" onsubmit="return false">
+        <form id="settings" autocomplete="off">
           <div class="field">
             <label for="board">Board</label>
             <select id="board"></select>
