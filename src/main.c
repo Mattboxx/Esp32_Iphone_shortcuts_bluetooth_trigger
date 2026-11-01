@@ -34,9 +34,8 @@
 
 static const char *TAG = "BTTRIGGER";
 
-#define LOOP_MS          50
+#define LOOP_MS          10
 #define FORGET_HOLD_MS   5000
-#define DEBOUNCE_SAMPLES 3
 
 static btt_config_t s_cfg;
 
@@ -45,15 +44,24 @@ static uint32_t now_ms(void)
     return (uint32_t)(esp_timer_get_time() / 1000);
 }
 
-static void input_init(int gpio, bool active_high)
+static void input_init(int gpio, bool active_high, uint8_t pull)
 {
     if (gpio < 0) {
         return;
     }
     gpio_reset_pin(gpio);
     gpio_set_direction(gpio, GPIO_MODE_INPUT);
+    gpio_pull_mode_t mode;
+    switch (pull) {
+        case PULL_UP:   mode = GPIO_PULLUP_ONLY;   break;
+        case PULL_DOWN: mode = GPIO_PULLDOWN_ONLY; break;
+        case PULL_NONE: mode = GPIO_FLOATING;      break;
+        default:        mode = active_high ? GPIO_PULLDOWN_ONLY : GPIO_PULLUP_ONLY; break;
+    }
     /* Input-only pads (GPIO34-39 on ESP32) have no pulls: the call just fails. */
-    gpio_set_pull_mode(gpio, active_high ? GPIO_PULLDOWN_ONLY : GPIO_PULLUP_ONLY);
+    if (gpio_set_pull_mode(gpio, mode) != ESP_OK && mode != GPIO_FLOATING) {
+        ESP_LOGW(TAG, "GPIO %d has no internal resistor: use an external one", gpio);
+    }
 }
 
 static bool input_active(int gpio, bool active_high)
@@ -97,30 +105,44 @@ static void button_task_step(uint32_t t)
 /* ---- trigger input -> link enabled? ---- */
 static bool trigger_step(uint32_t t)
 {
-    static int      stable = 0;
     static bool     level  = false;      /* debounced input level */
+    static bool     last_raw = false;
+    static uint32_t raw_since = 0;       /* when the raw level last changed */
     static bool     prev   = false;
     static uint32_t pulse_until = 0;
+    static uint32_t hold_until  = 0;
 
     if (s_cfg.trigger_mode == TRIGGER_ALWAYS) {
         return true;
     }
 
     bool raw = input_active(s_cfg.trigger_gpio, s_cfg.trigger_active_high);
-    if (raw != level) {
-        if (++stable >= DEBOUNCE_SAMPLES) {
-            level = raw;
-            stable = 0;
-        }
-    } else {
-        stable = 0;
+    if (raw != last_raw) {
+        last_raw  = raw;
+        raw_since = t;
+    }
+    if (raw != level && t - raw_since >= s_cfg.debounce_ms) {
+        level = raw;
     }
 
-    bool rising = level && !prev;
+    bool rising  = level && !prev;
+    bool falling = !level && prev;
     prev = level;
 
     if (s_cfg.trigger_mode == TRIGGER_SWITCH) {
-        return level;
+        /* Optional release delay: stay connected N s after the pin goes idle. */
+        if (falling && s_cfg.hold_s) {
+            hold_until = t + (uint32_t)s_cfg.hold_s * 1000u;
+            if (hold_until == 0) {
+                hold_until = 1;
+            }
+        }
+        if (level) {
+            hold_until = 0;
+        } else if (hold_until && (int32_t)(t - hold_until) >= 0) {
+            hold_until = 0;
+        }
+        return level || hold_until != 0;
     }
 
     /* PULSE: each press (re)starts the window */
@@ -187,9 +209,10 @@ void app_main(void)
     btt_config_log(&s_cfg);
 
     led_init(&s_cfg);
-    input_init(s_cfg.button_gpio, false);
-    if (s_cfg.trigger_gpio != s_cfg.button_gpio) {
-        input_init(s_cfg.trigger_gpio, s_cfg.trigger_active_high);
+    input_init(s_cfg.button_gpio, false, PULL_UP);
+    if (s_cfg.trigger_mode != TRIGGER_ALWAYS) {
+        /* If it shares the button pin, the trigger's resistor setting wins. */
+        input_init(s_cfg.trigger_gpio, s_cfg.trigger_active_high, s_cfg.trigger_pull);
     }
 
     transport_init(&s_cfg);

@@ -218,6 +218,12 @@ pre.cmd { background: var(--surface); border: 1px solid var(--border); border-ra
 .faq details p b { color: var(--text); }
 .foot { margin-top: 64px; border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--muted); font-size: .85rem; }
 
+/* ---------- pin settings ---------- */
+.pin-box { margin-top: 16px; padding: 4px 16px 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); }
+.wiring { margin: 14px 0 6px; padding: 10px 12px; border-radius: 9px; background: var(--surface-2); font-size: .9rem; }
+.wiring b { color: var(--text); }
+.hint.warn { color: var(--warn); }
+
 /* ---------- editions ---------- */
 .ed-title { margin-top: 28px; font-size: 1.2rem; }
 .ed-cards p { color: var(--muted); margin: 0; font-size: .95rem; }

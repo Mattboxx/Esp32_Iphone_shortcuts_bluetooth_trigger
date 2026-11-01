@@ -42,6 +42,13 @@ typedef enum {
 } trigger_mode_t;
 
 typedef enum {
+    PULL_AUTO = 0,        /* pull-up if active LOW, pull-down if active HIGH */
+    PULL_UP   = 1,
+    PULL_DOWN = 2,
+    PULL_NONE = 3,        /* floating: external resistor or push-pull source */
+} pull_mode_t;
+
+typedef enum {
     LED_NONE   = 0,
     LED_PLAIN  = 1,       /* ordinary LED on a GPIO                         */
     LED_WS2812 = 2,       /* addressable RGB LED (WS2812 / SK6812)          */
@@ -60,6 +67,9 @@ typedef struct {
     uint8_t  trigger_mode;     /* trigger_mode_t                                  */
     int8_t   trigger_gpio;     /* SWITCH / PULSE input                            */
     bool     trigger_active_high;
+    uint8_t  trigger_pull;     /* pull_mode_t                                     */
+    uint16_t debounce_ms;      /* input must be stable this long (10..5000)      */
+    uint16_t hold_s;           /* SWITCH: stay connected N s after release       */
     bool     from_flash;       /* true if loaded from the btcfg partition         */
 } btt_config_t;
 

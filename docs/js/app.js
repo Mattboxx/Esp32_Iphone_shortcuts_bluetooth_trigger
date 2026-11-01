@@ -3,7 +3,7 @@
 // already runs this firmware) -> install firmware + 4 KB settings sector.
 import { ESPLoader, Transport } from "../vendor/esptool-js-0.7.0.js";
 import {
-  CONFIG_OFFSET, CFG_SIZE, DEFAULTS, LED, TRIGGER,
+  CONFIG_OFFSET, CFG_SIZE, DEFAULTS, LED, PULL, TRIGGER,
   buildConfigSector, decodeConfig, encodeName,
 } from "./config.js";
 import { BOARDS, CHIPS, UNSUPPORTED, boardsForChip, outputPins } from "./boards.js";
@@ -163,6 +163,9 @@ function readForm() {
     triggerMode: trig,
     triggerGpio: Number($("trigger-gpio").value),
     triggerActiveHigh: $("trigger-pol").value === "1",
+    triggerPull: Number($("trigger-pull").value),
+    debounceMs: Number($("debounce").value) || DEFAULTS.debounceMs,
+    holdS: Math.max(0, Number($("hold").value) || 0),
   };
 }
 
@@ -183,6 +186,12 @@ function writeForm(s) {
   if (r) r.checked = true;
   setPin($("trigger-gpio"), s.triggerGpio);
   $("trigger-pol").value = s.triggerActiveHigh ? "1" : "0";
+  // PULL.auto (older settings) shown as the resistor it resolves to.
+  const pull = s.triggerPull === PULL.auto || s.triggerPull === undefined
+    ? (s.triggerActiveHigh ? PULL.down : PULL.up) : s.triggerPull;
+  $("trigger-pull").value = String(pull);
+  $("debounce").value = s.debounceMs || DEFAULTS.debounceMs;
+  $("hold").value = s.holdS || 0;
   setEdition(s.triggerMode === TRIGGER.always ? "power" : "pin", true);
 }
 
@@ -208,29 +217,68 @@ function refreshForm() {
   $("led-gpio").disabled = s.ledType === LED.none;
   $("led-pol").disabled = s.ledType !== LED.plain;
 
+  $("hold-row").hidden = s.triggerMode !== TRIGGER.switch;
   const hint = $("trigger-hint");
   let err = "";
   if (needsPin && s.triggerGpio < 0) err = "Choose the input pin for the switch / button.";
   else if (needsPin && s.triggerGpio === s.ledGpio && s.ledType !== LED.none) err = "The input pin can't also be the LED pin.";
   else if (s.ledType !== LED.none && s.ledGpio >= 0 && s.ledGpio === s.buttonGpio) err = "The LED pin can't also be the reset button.";
-  const chip = state.chip && CHIPS[state.chip];
+  const chip = CHIPS[state.chip || "ESP32"];
+  const advice = needsPin ? pinAdvice(s, chip) : { wiring: "", warn: "" };
+  $("wiring").innerHTML = advice.wiring;
   if (err) {
     hint.textContent = err;
-    hint.className = "hint wide err";
-  } else if (needsPin && chip?.noPull.includes(s.triggerGpio)) {
-    hint.textContent = `GPIO ${s.triggerGpio} has no internal pull resistor: add an external 10 kΩ ${s.triggerActiveHigh ? "pull-down to GND" : "pull-up to 3.3 V"}.`;
-    hint.className = "hint wide";
+    hint.className = "hint err";
   } else {
-    hint.textContent = s.triggerActiveHigh
-      ? "Wire the switch/button between the pin and 3.3 V. The internal pull-down is enabled for you."
-      : "Wire the switch/button between the pin and GND. The internal pull-up is enabled for you.";
-    hint.className = "hint wide";
-  }
-  if (needsPin && s.triggerGpio === s.buttonGpio && s.triggerGpio >= 0 && !err) {
-    hint.textContent += " Same pin as the reset button: a 5 s hold will also forget your phones.";
+    let w = advice.warn;
+    if (needsPin && s.triggerGpio === s.buttonGpio && s.triggerGpio >= 0) {
+      w += (w ? " " : "") + "Same pin as the reset button: holding it 5 s will also forget your phones.";
+    }
+    hint.textContent = w;
+    hint.className = "hint warn";
   }
   updateButtons(err);
   return err;
+}
+
+/** Wiring explanation + non-blocking warnings for the chosen pin setup. */
+function pinAdvice(s, chip) {
+  const g = s.triggerGpio;
+  if (g < 0) return { wiring: "", warn: "" };
+  const active = s.triggerActiveHigh ? "HIGH" : "LOW";
+  const activeTo = s.triggerActiveHigh ? "3.3 V" : "GND";
+  const restTo = s.triggerActiveHigh ? "GND" : "3.3 V";
+  const hasPull = !chip.noPull.includes(g);
+  const warns = [];
+  let wiring;
+
+  if (s.triggerPull === PULL.none) {
+    wiring = `<b>No internal resistor.</b> Your circuit must drive GPIO ${g}: a sensor/relay output that is ${active} when active, ` +
+      `or a switch to ${activeTo} plus an external 10 kΩ resistor from GPIO ${g} to ${restTo}.`;
+    warns.push("A pin left floating triggers at random.");
+  } else {
+    const pullTo = s.triggerPull === PULL.up ? "3.3 V" : "GND";
+    const rest = s.triggerPull === PULL.up ? "HIGH" : "LOW";
+    const matches = rest !== active;
+    wiring = !hasPull
+      ? `Wire your switch/button between <b>GPIO ${g}</b> and <b>${activeTo}</b>, and add an external 10 kΩ resistor from GPIO ${g} to ${restTo}.`
+      : matches
+      ? `Wire your switch/button between <b>GPIO ${g}</b> and <b>${activeTo}</b>. ` +
+        `The internal ${s.triggerPull === PULL.up ? "pull-up" : "pull-down"} keeps it ${rest} (idle) when the contact is open.`
+      : `The internal resistor pulls GPIO ${g} to ${pullTo}, so the pin rests <b>${rest}</b>, which is your <b>active</b> level: ` +
+        `it is triggered whenever nothing drives the pin.`;
+    if (!matches && hasPull) {
+      warns.push(`Usually you want ${s.triggerActiveHigh ? "pull-down" : "pull-up"} with an active-${active} input. Keep this only if your circuit actively drives the pin.`);
+    }
+    if (!hasPull) {
+      warns.push(`GPIO ${g} has no internal resistors: this setting has no effect. Choose "None" and add an external 10 kΩ to ${restTo}.`);
+    }
+  }
+  if (s.triggerMode === TRIGGER.pulse && s.pulseS < 3) {
+    warns.push("Under ~3 s the iPhone may not finish connecting, so the automation may not run.");
+  }
+  if (s.debounceMs > 1000) warns.push("Long debounce: presses shorter than that are ignored.");
+  return { wiring, warn: warns.join(" ") };
 }
 
 function updateButtons(err = refreshFormErrorOnly()) {
@@ -508,6 +556,13 @@ function init() {
   $("btn-settings-only").addEventListener("click", () => install(true));
   $("btn-monitor").addEventListener("click", monitor);
   $("board").addEventListener("change", (e) => applyBoardPreset(e.target.value));
+  // Changing polarity picks the matching resistor (user can still override).
+  $("trigger-pol").addEventListener("change", () => {
+    if ($("trigger-pull").value !== String(PULL.none)) {
+      $("trigger-pull").value = $("trigger-pol").value === "1" ? String(PULL.down) : String(PULL.up);
+    }
+    refreshForm();
+  });
   document.querySelectorAll('input[name="edition"]').forEach((r) =>
     r.addEventListener("change", (e) => setEdition(e.target.value)));
   $("settings").addEventListener("input", refreshForm);

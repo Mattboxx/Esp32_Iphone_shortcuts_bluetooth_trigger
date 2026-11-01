@@ -10,6 +10,7 @@ const VERSION = 1;
 
 export const TRIGGER = { always: 0, switch: 1, pulse: 2 };
 export const LED = { none: 0, plain: 1, ws2812: 2 };
+export const PULL = { auto: 0, up: 1, down: 2, none: 3 };
 
 export const DEFAULTS = Object.freeze({
   name: "ESP32-BT-Trigger",
@@ -24,6 +25,9 @@ export const DEFAULTS = Object.freeze({
   triggerMode: TRIGGER.always,
   triggerGpio: -1,
   triggerActiveHigh: false,
+  triggerPull: PULL.auto,
+  debounceMs: 50,
+  holdS: 0,
 });
 
 const CRC_TABLE = (() => {
@@ -78,6 +82,9 @@ export function encodeConfig(s) {
   b[51] = clamp(s.triggerMode, 0, 2);
   v.setInt8(52, clamp(s.triggerGpio, -1, 63));
   b[53] = s.triggerActiveHigh ? 1 : 0;
+  b[54] = clamp(s.triggerPull ?? PULL.auto, 0, 3);
+  v.setUint16(56, clamp(s.debounceMs ?? DEFAULTS.debounceMs, 10, 5000), true);
+  v.setUint16(58, clamp(s.holdS ?? 0, 0, 3600), true);
   v.setUint32(60, crc32(b.subarray(0, CFG_SIZE - 4)), true);
   return b;
 }
@@ -112,5 +119,8 @@ export function decodeConfig(bytes) {
     triggerMode: b[51],
     triggerGpio: v.getInt8(52),
     triggerActiveHigh: b[53] !== 0,
+    triggerPull: b[54] <= 3 ? b[54] : PULL.auto,
+    debounceMs: v.getUint16(56, true) || DEFAULTS.debounceMs,
+    holdS: v.getUint16(58, true),
   };
 }

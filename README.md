@@ -89,6 +89,12 @@ rewrites them in a second without touching the pairing.
 |---|---|
 | **Bluetooth name** | What you'll see in iPhone Settings and in Shortcuts (up to 29 bytes). |
 | **Edition / trigger** | **Power-on**: connect whenever powered. **Pin, switch**: connected while the input pin is active (reed switch, relay). **Pin, button**: a press connects for N seconds, then disconnects. |
+| **Input pin** *(pin edition)* | Any safe GPIO of your chip (flash pins are hidden). |
+| **Active level** *(pin edition)* | Triggered when the pin reads **LOW** or **HIGH**. |
+| **Internal resistor** *(pin edition)* | **Pull-up**, **pull-down** or **none** (for sensor/relay outputs that drive the pin, or an external resistor). The installer explains the wiring and warns about combinations that would float or stay always on. |
+| **Debounce** *(pin edition)* | Ignore glitches shorter than N ms (10–5000, default 50). Raise it for bouncy reed switches or relays. |
+| **Keep connected after release** *(switch)* | Stay connected N seconds after the pin goes idle, so a door that opens and closes quickly still fires. |
+| **Duration** *(button)* | How long each press keeps the iPhone connected (default 10 s; under ~3 s the iPhone may not finish connecting). |
 | **Status LED** | None, normal LED or RGB (WS2812/SK6812). Fast blink = ready to pair, slow blink = looking for the iPhone, solid = connected. |
 | **"Forget phones" button** | Hold 5 s to wipe every pairing (default: the BOOT button). |
 | **Pairing window** | Only accept *new* phones in the first 60 s / 3 min after power-on, so strangers can't see or pair it. Paired phones always reconnect. |

@@ -43,6 +43,9 @@ static void set_defaults(btt_config_t *c)
     c->trigger_mode        = BTT_EDITION_PIN ? TRIGGER_SWITCH : TRIGGER_ALWAYS;
     c->trigger_gpio        = BTT_EDITION_PIN ? BTT_PIN_DEFAULT_GPIO : -1;
     c->trigger_active_high = false;
+    c->trigger_pull        = PULL_AUTO;
+    c->debounce_ms         = 50;
+    c->hold_s              = 0;
     c->from_flash          = false;
 }
 
@@ -141,6 +144,10 @@ void btt_config_load(btt_config_t *c)
     c->trigger_mode        = b[51];
     c->trigger_gpio        = (int8_t)b[52];
     c->trigger_active_high = b[53] != 0;
+    /* Bytes 54..59 were reserved (zero) in early v2 settings: zero = default. */
+    c->trigger_pull        = b[54];
+    c->debounce_ms         = rd16(b + 56) ? rd16(b + 56) : 50;
+    c->hold_s              = rd16(b + 58);
     c->from_flash          = true;
 
     /* Sanitize everything: a bad value must never brick the trigger. */
@@ -150,6 +157,10 @@ void btt_config_load(btt_config_t *c)
     if (c->led_type > LED_WS2812) c->led_type = LED_NONE;
     if (c->led_brightness == 0) c->led_brightness = 32;
     if (c->trigger_mode > TRIGGER_PULSE) c->trigger_mode = TRIGGER_ALWAYS;
+    if (c->trigger_pull > PULL_NONE) c->trigger_pull = PULL_AUTO;
+    if (c->debounce_ms < 10)   c->debounce_ms = 10;
+    if (c->debounce_ms > 5000) c->debounce_ms = 5000;
+    if (c->hold_s > 3600)      c->hold_s = 3600;
     c->led_gpio     = sane_gpio(c->led_gpio, true);
     c->button_gpio  = sane_gpio(c->button_gpio, false);
     c->trigger_gpio = sane_gpio(c->trigger_gpio, false);
@@ -166,10 +177,18 @@ void btt_config_log(const btt_config_t *c)
     static const char *leds[]  = {"none", "plain", "WS2812"};
     ESP_LOGI(TAG, "Settings (%s):", c->from_flash ? "from web flasher" : "defaults");
     ESP_LOGI(TAG, "  name          : %s", c->name);
-    ESP_LOGI(TAG, "  trigger mode  : %s, pin %d, active %s", modes[c->trigger_mode],
-             c->trigger_gpio, c->trigger_active_high ? "HIGH" : "LOW");
+    static const char *pulls[] = {"auto", "pull-up", "pull-down", "none (external)"};
+    ESP_LOGI(TAG, "  trigger mode  : %s", modes[c->trigger_mode]);
+    if (c->trigger_mode != TRIGGER_ALWAYS) {
+        ESP_LOGI(TAG, "  input         : GPIO %d, active %s, resistor %s, debounce %u ms",
+                 c->trigger_gpio, c->trigger_active_high ? "HIGH" : "LOW",
+                 pulls[c->trigger_pull], c->debounce_ms);
+    }
     if (c->trigger_mode == TRIGGER_PULSE) {
         ESP_LOGI(TAG, "  pulse         : %u s", c->pulse_s);
+    }
+    if (c->trigger_mode == TRIGGER_SWITCH && c->hold_s) {
+        ESP_LOGI(TAG, "  release delay : %u s", c->hold_s);
     }
     ESP_LOGI(TAG, "  status LED    : %s on GPIO %d%s", leds[c->led_type], c->led_gpio,
              c->led_active_low ? " (active LOW)" : "");

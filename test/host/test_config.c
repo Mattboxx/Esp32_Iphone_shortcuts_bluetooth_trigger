@@ -38,10 +38,12 @@ int main(int argc, char **argv)
     printf("{\"name\":\"%s\",\"reconnectS\":%u,\"pulseS\":%u,\"pairWindowS\":%u,"
            "\"ledGpio\":%d,\"ledType\":%u,\"ledActiveLow\":%s,\"ledBrightness\":%u,"
            "\"buttonGpio\":%d,\"triggerMode\":%u,\"triggerGpio\":%d,\"triggerActiveHigh\":%s,"
+           "\"triggerPull\":%u,\"debounceMs\":%u,\"holdS\":%u,"
            "\"fromFlash\":%s}\n",
            c.name, c.reconnect_s, c.pulse_s, c.pair_window_s, c.led_gpio, c.led_type,
            c.led_active_low ? "true" : "false", c.led_brightness, c.button_gpio,
            c.trigger_mode, c.trigger_gpio, c.trigger_active_high ? "true" : "false",
+           c.trigger_pull, c.debounce_ms, c.hold_s,
            c.from_flash ? "true" : "false");
     return 0;
 }

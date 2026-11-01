@@ -7,7 +7,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
-import { encodeConfig, decodeConfig, buildConfigSector, DEFAULTS, TRIGGER, LED } from "../../docs/js/config.js";
+import { encodeConfig, decodeConfig, buildConfigSector, crc32, DEFAULTS, TRIGGER, LED, PULL } from "../../docs/js/config.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
@@ -35,6 +35,7 @@ const full = {
   ...DEFAULTS, name: "Scooter Ninebot", reconnectS: 12, pulseS: 30, pairWindowS: 120,
   ledGpio: 27, ledType: LED.ws2812, ledActiveLow: false, ledBrightness: 80,
   buttonGpio: 39, triggerMode: TRIGGER.pulse, triggerGpio: 32, triggerActiveHigh: true,
+  triggerPull: PULL.none, debounceMs: 250, holdS: 45,
 };
 
 test("firmware reads every field written by the web flasher", () => {
@@ -66,6 +67,34 @@ test("pin edition: blank flash -> switch trigger on GPIO4, active LOW", () => {
 test("pin edition: settings written by the web flasher still win", () => {
   const fw = firmwareParse(encodeConfig({ ...full, triggerMode: TRIGGER.always }), exePin);
   assert.equal(fw.triggerMode, 0);
+});
+
+test("every resistor option survives the round trip", () => {
+  for (const pull of Object.values(PULL)) {
+    assert.equal(firmwareParse(encodeConfig({ ...full, triggerPull: pull })).triggerPull, pull);
+  }
+});
+
+test("early v2 settings (bytes 54..59 = 0) -> auto resistor, 50 ms debounce, no hold", () => {
+  const b = encodeConfig(full);
+  b.fill(0, 54, 60);
+  new DataView(b.buffer).setUint32(60, crc32(b.subarray(0, 60)), true);
+  const fw = firmwareParse(b);
+  assert.equal(fw.fromFlash, true);
+  assert.equal(fw.triggerPull, PULL.auto);
+  assert.equal(fw.debounceMs, 50);
+  assert.equal(fw.holdS, 0);
+});
+
+test("out-of-range debounce / hold are clamped by the firmware", () => {
+  const b = encodeConfig(full);
+  const dv = new DataView(b.buffer);
+  dv.setUint16(56, 1, true);
+  dv.setUint16(58, 60000, true);
+  dv.setUint32(60, crc32(b.subarray(0, 60)), true);
+  const fw = firmwareParse(b);
+  assert.equal(fw.debounceMs, 10);
+  assert.equal(fw.holdS, 3600);
 });
 
 test("corrupted byte -> CRC rejects it, defaults used", () => {

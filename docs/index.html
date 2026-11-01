@@ -185,23 +185,44 @@
             </div>
           </fieldset>
 
-          <div class="field-row" id="trigger-pin-row" hidden>
-            <div class="field">
-              <label for="trigger-gpio">Input pin</label>
-              <select id="trigger-gpio" class="pin-in"></select>
+          <div id="trigger-pin-row" class="pin-box" hidden>
+            <div class="field-row">
+              <div class="field">
+                <label for="trigger-gpio">Input pin</label>
+                <select id="trigger-gpio" class="pin-in"></select>
+              </div>
+              <div class="field">
+                <label for="trigger-pol">Active when the pin reads</label>
+                <select id="trigger-pol">
+                  <option value="0">LOW (pulled to GND)</option>
+                  <option value="1">HIGH (pulled to 3.3 V)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="trigger-pull">Internal resistor</label>
+                <select id="trigger-pull">
+                  <option value="1">Pull-up (to 3.3 V)</option>
+                  <option value="2">Pull-down (to GND)</option>
+                  <option value="3">None (external resistor / sensor output)</option>
+                </select>
+              </div>
             </div>
-            <div class="field">
-              <label for="trigger-pol">Active when the pin is</label>
-              <select id="trigger-pol">
-                <option value="0">connected to GND (LOW)</option>
-                <option value="1">connected to 3.3 V (HIGH)</option>
-              </select>
+            <div class="field-row">
+              <div class="field">
+                <label for="debounce">Debounce <small>(ignore glitches shorter than)</small></label>
+                <div class="unit"><input id="debounce" type="number" min="10" max="5000" step="10" value="50"><span>ms</span></div>
+              </div>
+              <div class="field" id="pulse-row">
+                <label for="pulse">Stay connected for <small>(per press)</small></label>
+                <div class="unit"><input id="pulse" type="number" min="1" max="3600" value="10"><span>s</span></div>
+              </div>
+              <div class="field" id="hold-row">
+                <label for="hold">Keep connected after release</label>
+                <div class="unit"><input id="hold" type="number" min="0" max="3600" value="0"><span>s</span></div>
+              </div>
             </div>
-            <div class="field" id="pulse-row">
-              <label for="pulse">Stay connected for</label>
-              <div class="unit"><input id="pulse" type="number" min="3" max="3600" value="10"><span>s</span></div>
-            </div>
-            <small class="hint wide" id="trigger-hint">Wire a button or switch between the pin and GND. The internal pull-up is enabled for you.</small>
+            <p class="wiring" id="wiring"></p>
+            <small class="hint" id="trigger-hint"></small>
           </div>
 
           <details class="field advanced">
