@@ -13,9 +13,11 @@ Se salti questi punti bruci il lancio. Su Reddit e HN il primo post è anche l'u
    riavvio → riconnessione, modalità *switch* e *pulse*, "Save settings only", pulsante
    reset 5 s. Il codice compila ma non è mai stato acceso. Un commento "non funziona"
    nelle prime due ore uccide il thread.
-2. **Compra una ESP32-C3 SuperMini (~3 €) e prova la variante BLE.** Se funziona, il
-   messaggio diventa "qualsiasi ESP32 da 3 €", che è molto più forte. Se non funziona,
-   lascia il badge *beta* e non nominarla nei post.
+2. **Nei post scrivi sempre "ESP32 originale (WROOM-32 / DevKit)".** S3, C3 e C6 hanno
+   solo Bluetooth LE e iOS non li mostra tra i trigger delle automazioni (provato con una
+   S3). È la domanda che arriverà per prima nei commenti: anticipala nel testo, e
+   presentala come scoperta utile ("BLE HID pairs but never shows up in Shortcuts"), non
+   come un limite.
 3. **Registra un video di 15-20 secondi. È l'asset più importante di tutta la campagna.**
    Inquadratura unica: mano che accende il monopattino/lampada → l'iPhone sul manubrio
    apre Maps da solo. Niente musica, niente intro. Senza video questo progetto è "un
@@ -117,7 +119,7 @@ Rispondi a **ogni** commento nelle prime 3 ore: è lì che si decide il ranking.
 > - With Classic HID the *device* must reconnect after a reboot: it calls back the last connected bonded phone, then round-robins the others.
 > - Settings (name, trigger mode, pins, LED) live in a 4 KB `btcfg` partition. The web installer (esptool-js) writes firmware + that sector, reads it back to pre-fill the form, and can update settings only, without touching NVS, so pairings survive.
 > - Same 2 MB image for every ESP32 board; UNICORE + auto-crystal so SOLO/26 MHz boards boot.
-> - C3/S3/C6 get a BLE HID-over-GATT build. **Beta, not confirmed on iPhone yet**: if you have a C3 + iPhone, I'd love a test report.
+> - Original ESP32 only. I also built a BLE HID-over-GATT version for the S3/C3/C6: it pairs fine, but iOS Shortcuts never lists BLE accessories as automation triggers, so Classic BT is the only way.
 >
 > Code + installer: [link]
 
@@ -129,7 +131,7 @@ Rispondi a **ogni** commento nelle prime 3 ore: è lì che si decide il ranking.
 ### Show HN
 **Title:** Show HN: Turn a $3 ESP32 into a Bluetooth trigger for iPhone Shortcuts
 
-> First comment: why a mouse (iOS only pairs certain device classes from Settings; a keyboard hides the on-screen keyboard), why Classic BT, how the settings partition + browser installer works, what is still untested (BLE on C3/S3/C6).
+> First comment: why a mouse (iOS only pairs certain device classes from Settings; a keyboard hides the on-screen keyboard), why Classic BT, how the settings partition + browser installer works, and why BLE-only chips (S3/C3/C6) don't work: BLE HID pairs, but Shortcuts never lists it as a trigger.
 
 ### Hackaday tip
 > Subject: ESP32 as a Bluetooth trigger for iPhone Shortcuts (browser installer)

@@ -13,20 +13,10 @@ static const char *TAG = "CONFIG";
 #define CFG_PART_SUBTYPE 0x00
 #define CFG_PART_LABEL   "btcfg"
 
-/* Default pins: the BOOT button exists on almost every dev board. */
-#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S3
+/* Default pins: BOOT button on GPIO0, blue LED on GPIO2 (most ESP32 DevKit / D1 mini32). */
 #define DEFAULT_BUTTON_GPIO 0
-#else /* ESP32-C3 / C6: BOOT button is GPIO9 */
-#define DEFAULT_BUTTON_GPIO 9
-#endif
-
-#if CONFIG_IDF_TARGET_ESP32
-#define DEFAULT_LED_GPIO    2      /* blue LED on most ESP32 DevKit / D1 mini32 */
+#define DEFAULT_LED_GPIO    2
 #define DEFAULT_LED_TYPE    LED_PLAIN
-#else
-#define DEFAULT_LED_GPIO    -1     /* boards differ too much: pick it in the web flasher */
-#define DEFAULT_LED_TYPE    LED_NONE
-#endif
 
 static void set_defaults(btt_config_t *c)
 {
@@ -73,18 +63,7 @@ static uint32_t rd32(const uint8_t *p)
 /* Pins wired to the SPI flash: touching them crashes the chip. */
 static bool pin_reserved(int g)
 {
-#if CONFIG_IDF_TARGET_ESP32
-    return g >= 6 && g <= 11;
-#elif CONFIG_IDF_TARGET_ESP32S3
-    return g >= 26 && g <= 32;
-#elif CONFIG_IDF_TARGET_ESP32C3
-    return g >= 11 && g <= 17;
-#elif CONFIG_IDF_TARGET_ESP32C6
-    return g >= 24 && g <= 30;
-#else
-    (void)g;
-    return false;
-#endif
+    return g >= 6 && g <= 11;   /* ESP32: GPIO6-11 drive the SPI flash */
 }
 
 static int8_t sane_gpio(int8_t g, bool output)

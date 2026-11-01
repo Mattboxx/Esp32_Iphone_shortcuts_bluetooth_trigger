@@ -1,6 +1,7 @@
-// Chip families and board presets.
+// Supported chip and board presets. Only the original ESP32 works: it has
+// Classic Bluetooth, and iOS Shortcuts ignores Bluetooth LE (GATT) accessories.
 // A preset only pre-fills the pins (LED, button): the firmware is the same
-// for every board of a chip family. Pins come from public board docs:
+// for every ESP32 board. Pins come from public board docs:
 // double-check against your board if something does not blink.
 import { LED } from "./config.js";
 
@@ -9,7 +10,6 @@ const steps = (a, b, s) => Array.from({ length: Math.floor((b - a) / s) + 1 }, (
 
 // iPhone test status per chip, shown in the installer and downloads table.
 const TESTED = (short, long) => ({ ok: true, short, long });
-const BETA = { ok: false, short: "beta", long: "beta: please report if it works" };
 
 export const CHIPS = {
   ESP32: {
@@ -23,47 +23,20 @@ export const CHIPS = {
     inputOnly: [34, 35, 36, 37, 38, 39],
     noPull: [34, 35, 36, 37, 38, 39],
   },
-  "ESP32-S3": {
-    env: "esp32s3",
-    transport: "ble",
-    label: "ESP32-S3",
-    status: TESTED("tested", "tested on iPhone (ESP32-S3-Zero)"),
-    txLevels: steps(-24, 21, 3),
-    inputs: [...range(0, 21), ...range(33, 48)],
-    inputOnly: [],
-    noPull: [],
-  },
-  "ESP32-C3": {
-    env: "esp32c3",
-    transport: "ble",
-    label: "ESP32-C3",
-    status: BETA,
-    txLevels: steps(-24, 21, 3),
-    inputs: [...range(0, 10), ...range(18, 21)],
-    inputOnly: [],
-    noPull: [],
-  },
-  "ESP32-C6": {
-    env: "esp32c6",
-    transport: "ble",
-    label: "ESP32-C6",
-    status: BETA,
-    txLevels: [...steps(-15, 18, 3), 20],
-    inputs: range(0, 23),
-    inputOnly: [],
-    noPull: [],
-  },
 };
 
 // Chips detected by the flasher that cannot work, with the reason.
 export const UNSUPPORTED = {
-  "ESP32-S2": "The ESP32-S2 has no Bluetooth radio at all.",
-  "ESP32-P4": "The ESP32-P4 has no Bluetooth radio.",
-  ESP8266: "The ESP8266 has no Bluetooth radio.",
-  "ESP32-H2": "ESP32-H2 support is planned (not built yet).",
-  "ESP32-C2": "ESP32-C2 support is planned (not built yet).",
-  "ESP32-C5": "ESP32-C5 support is planned (not built yet).",
-  "ESP32-C61": "ESP32-C61 support is planned (not built yet).",
+  "ESP32-S3": "Only Bluetooth LE: iOS Shortcuts does not list BLE accessories as automation triggers. You need an original ESP32 (e.g. ESP32 DevKit / WROOM-32), which has Classic Bluetooth.",
+  "ESP32-C3": "Only Bluetooth LE: iOS Shortcuts does not list BLE accessories as automation triggers. You need an original ESP32 (e.g. ESP32 DevKit / WROOM-32), which has Classic Bluetooth.",
+  "ESP32-C6": "Only Bluetooth LE: iOS Shortcuts does not list BLE accessories as automation triggers. You need an original ESP32 (e.g. ESP32 DevKit / WROOM-32), which has Classic Bluetooth.",
+  "ESP32-C5": "Only Bluetooth LE: iOS Shortcuts does not list BLE accessories as automation triggers. You need an original ESP32 (e.g. ESP32 DevKit / WROOM-32), which has Classic Bluetooth.",
+  "ESP32-C61": "Only Bluetooth LE: iOS Shortcuts does not list BLE accessories as automation triggers. You need an original ESP32 (e.g. ESP32 DevKit / WROOM-32), which has Classic Bluetooth.",
+  "ESP32-C2": "Only Bluetooth LE: iOS Shortcuts does not list BLE accessories as automation triggers. You need an original ESP32 (e.g. ESP32 DevKit / WROOM-32), which has Classic Bluetooth.",
+  "ESP32-H2": "Only Bluetooth LE: iOS Shortcuts does not list BLE accessories as automation triggers. You need an original ESP32 (e.g. ESP32 DevKit / WROOM-32), which has Classic Bluetooth.",
+  "ESP32-S2": "The ESP32-S2 has no Bluetooth at all. You need an original ESP32 (e.g. ESP32 DevKit / WROOM-32).",
+  "ESP32-P4": "The ESP32-P4 has no Bluetooth. You need an original ESP32 (e.g. ESP32 DevKit / WROOM-32).",
+  ESP8266: "The ESP8266 has no Bluetooth. You need an original ESP32 (e.g. ESP32 DevKit / WROOM-32).",
 };
 
 const b = (id, chip, name, led, button, note = "") => ({ id, chip, name, led, button, note });
@@ -72,7 +45,6 @@ const rgb = (gpio) => ({ type: LED.ws2812, gpio, activeLow: false });
 const noLed = { type: LED.none, gpio: -1, activeLow: false };
 
 export const BOARDS = [
-  // ---- original ESP32: Classic Bluetooth ----
   b("esp32-devkit", "ESP32", "ESP32 DevKit / DOIT DevKit V1 / NodeMCU-32S", plain(2), 0, "Blue LED on GPIO2, BOOT button on GPIO0. DevKitC v4 has no user LED: harmless."),
   b("d1-mini32", "ESP32", "Wemos / LOLIN D1 mini32", plain(2), 0),
   b("lolin32-lite", "ESP32", "LOLIN32 Lite", plain(22, true), 0),
@@ -82,28 +54,6 @@ export const BOARDS = [
   b("heltec-v2", "ESP32", "Heltec WiFi Kit 32 / LoRa 32 (V2)", plain(25), 0),
   b("ttgo-tdisplay", "ESP32", "LilyGO TTGO T-Display", noLed, 0),
   b("esp32-generic", "ESP32", "Other ESP32 board", noLed, 0),
-
-  // ---- ESP32-C3: BLE ----
-  b("c3-supermini", "ESP32-C3", "ESP32-C3 SuperMini", plain(8, true), 9),
-  b("c3-xiao", "ESP32-C3", "Seeed XIAO ESP32-C3", noLed, 9, "No user LED on this board."),
-  b("c3-devkitm", "ESP32-C3", "Espressif ESP32-C3-DevKitM-1 / DevKitC-02", rgb(8), 9),
-  b("c3-lolin-mini", "ESP32-C3", "LOLIN C3 Mini", rgb(7), 9),
-  b("c3-m5stamp", "ESP32-C3", "M5Stamp C3", rgb(2), 3),
-  b("c3-generic", "ESP32-C3", "Other ESP32-C3 board", noLed, 9),
-
-  // ---- ESP32-S3: BLE ----
-  b("s3-devkitc", "ESP32-S3", "Espressif ESP32-S3-DevKitC-1", rgb(48), 0, "RGB LED is GPIO48 on v1.0 boards, GPIO38 on v1.1."),
-  b("s3-xiao", "ESP32-S3", "Seeed XIAO ESP32-S3", plain(21, true), 0),
-  b("s3-atoms3-lite", "ESP32-S3", "M5Stack AtomS3 Lite", rgb(35), 41),
-  b("s3-supermini", "ESP32-S3", "ESP32-S3 SuperMini", rgb(48), 0, "If the LED stays dark, try a plain LED on GPIO48 or check your board's pinout."),
-  b("s3-zero", "ESP32-S3", "Waveshare ESP32-S3-Zero / S3-Mini", rgb(21), 0),
-  b("s3-lolin-mini", "ESP32-S3", "LOLIN S3 Mini", rgb(47), 0),
-  b("s3-generic", "ESP32-S3", "Other ESP32-S3 board", noLed, 0),
-
-  // ---- ESP32-C6: BLE ----
-  b("c6-devkitc", "ESP32-C6", "Espressif ESP32-C6-DevKitC-1 / DevKitM-1", rgb(8), 9),
-  b("c6-xiao", "ESP32-C6", "Seeed XIAO ESP32-C6", plain(15, true), 9),
-  b("c6-generic", "ESP32-C6", "Other ESP32-C6 board", noLed, 9),
 ];
 
 export const boardsForChip = (chip) => BOARDS.filter((x) => x.chip === chip);

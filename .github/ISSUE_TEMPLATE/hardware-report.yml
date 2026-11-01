@@ -21,14 +21,14 @@ body:
     id: board
     attributes:
       label: Board
-      description: Exact name, e.g. "ESP32-C3 SuperMini", "Waveshare ESP32-S3-Zero", "DOIT ESP32 DevKit V1"
+      description: Exact name, e.g. "DOIT ESP32 DevKit V1", "Wemos D1 mini32", "M5Stack Atom Lite"
     validations:
       required: true
   - type: dropdown
     id: chip
     attributes:
       label: Chip (shown by the web installer)
-      options: ["ESP32", "ESP32-S3", "ESP32-C3", "ESP32-C6", "Other"]
+      options: ["ESP32", "Other"]
     validations:
       required: true
   - type: input

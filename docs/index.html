@@ -130,6 +130,10 @@
   <section id="install" class="wrap installer">
     <h2>Install from your browser</h2>
     <p class="sub">Uses Web Serial in <b>Chrome, Edge or Opera on a computer</b> (Windows, macOS, Linux, ChromeOS). Nothing to install.</p>
+    <div class="alert warn compat">
+      <b>You need an original ESP32</b> (ESP32-WROOM-32 DevKit, D1 mini32, NodeMCU-32S… about $3–5).
+      <b>ESP32-S3, C3 and C6 won't work</b>: they only have Bluetooth LE, and iOS Shortcuts doesn't list those accessories as triggers.
+    </div>
 
     <div id="browser-warning" class="alert warn" hidden>
       <b>This browser can't talk to USB devices.</b> Open this page in <b>Chrome</b> or <b>Edge</b> on a computer.
@@ -359,11 +363,10 @@ esptool.py --port &lt;PORT&gt; write_flash 0x0 bt-trigger-esp32.factory.bin</cod
       <p><b>Power-on</b> if the thing you want to detect can power the board (USB port, 12 V socket with a USB adapter, a lamp's charger). <b>Pin</b> if the board is always powered and you want to react to a contact: door reed switch, relay, button, the output of another device. It's one firmware: you can switch later with <b>Save settings only</b>, in a second.</p>
       <p>With a pin trigger the board stays visible until a phone is paired, so you can pair it before wiring anything. After that it only connects when the pin is active.</p></details>
     <details><summary>Which boards work?</summary>
-      <p><b>Any original ESP32</b> (DevKit, WROOM, WROVER, PICO, D1 mini32, M5 Atom, ESP32-CAM, TTGO…), including single-core and 26 MHz-crystal variants. It uses <b>Classic Bluetooth HID</b>, the mode this project was first tested with on iPhone (v1; the v2 rewrite is being verified).</p>
-      <p><b>ESP32-C3, ESP32-S3 and ESP32-C6</b> have no Classic Bluetooth, so they get a <b>Bluetooth LE HID mouse</b> (HID over GATT, the same protocol as BLE mice and keyboards). <span class="tag ok">tested</span> on iPhone with a Waveshare ESP32-S3-Zero. ESP32-C3 and C6 run the same code but are still <span class="tag">beta</span> until someone confirms them: if you try one, please <a href="https://github.com/Mattboxx/esp32-bt-trigger/issues/new?template=hardware-report.yml">report back</a>.</p>
-      <p><b>Not compatible:</b> ESP32-S2 and ESP8266 (no Bluetooth). Any flash size from 2 MB works.</p></details>
+      <p><b>Only the original ESP32</b> (ESP32-WROOM-32 / WROVER / PICO modules: DevKit, DOIT DevKit V1, NodeMCU-32S, D1 mini32, M5 Atom, ESP32-CAM, TTGO…), including single-core and 26 MHz-crystal variants, with 2 MB of flash or more. It uses <b>Classic Bluetooth HID</b>.</p>
+      <p><b>ESP32-S3, C3, C6, C5, H2 do not work.</b> They only have Bluetooth LE, and iOS Shortcuts does not list Bluetooth LE (GATT) accessories as automation triggers: they pair, but never show up in the automation's device list. We tested it. <b>ESP32-S2 and ESP8266</b> have no Bluetooth at all.</p></details>
     <details><summary>Why a mouse and not a keyboard or a "beacon"?</summary>
-      <p>The Shortcuts "Bluetooth" automation only lists accessories paired in Settings, and iOS only pairs certain device types from there: audio, keyboards, mice, game controllers. A plain BLE beacon never shows up. A keyboard would hide your on-screen keyboard while connected. A mouse has no side effects except an optional on-screen pointer.</p></details>
+      <p>The Shortcuts "Bluetooth" automation only lists accessories paired in Settings, and iOS only pairs certain device types from there: audio, keyboards, mice, game controllers. A plain BLE beacon never shows up, and Bluetooth LE accessories that do pair are still missing from the automation's device list: it has to be <b>Classic Bluetooth</b>. A keyboard would hide your on-screen keyboard while connected. A mouse has no side effects except an optional on-screen pointer.</p></details>
     <details><summary>Does it work with several iPhones?</summary>
       <p>Yes. Several phones can pair. The board calls back the last one that was connected first, then the others. Only one is connected at a time.</p></details>
     <details><summary>Is it private / secure?</summary>

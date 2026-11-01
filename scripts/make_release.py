@@ -21,9 +21,6 @@ OUT = ROOT / "firmware"
 # env name -> (esptool chip, bootloader offset, transport, family label)
 VARIANTS = {
     "esp32":   ("esp32",   0x1000, "classic", "ESP32"),
-    "esp32s3": ("esp32s3", 0x0,    "ble",     "ESP32-S3"),
-    "esp32c3": ("esp32c3", 0x0,    "ble",     "ESP32-C3"),
-    "esp32c6": ("esp32c6", 0x0,    "ble",     "ESP32-C6"),
 }
 
 CONFIG_OFFSET = 0x180000  # "btcfg" partition, see partitions.csv

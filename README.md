@@ -59,27 +59,25 @@ clicked.
   keyboards, mice, controllers). Plain BLE beacons never appear in the list, so they
   can't trigger Shortcuts. A *keyboard* would hide your on-screen keyboard while
   connected. A mouse has no side effect (at most an AssistiveTouch pointer).
+- **Why Classic Bluetooth?** Bluetooth LE (GATT) HID accessories do pair with the
+  iPhone, but iOS Shortcuts doesn't list them as automation triggers (we tested it
+  with an ESP32-S3). Only Classic Bluetooth accessories show up, so this needs the
+  original ESP32.
 - **Reconnects by itself.** After a reboot or a dropped link the board calls back
   the last paired iPhone, then any other paired phone.
 
 ## Compatibility
 
-| Chip | Bluetooth mode | Status |
+| Chip | Works? | Why |
 |---|---|---|
-| **ESP32** (original): DevKit, WROOM-32, WROVER, PICO-D4, D1 mini32, M5 Atom, ESP32-CAM, TTGO… incl. single-core & 26 MHz crystal variants | Classic BT HID | ✅ Tested on iPhone (v1); v2 rewrite being verified |
-| **ESP32-C3**: SuperMini, XIAO C3, DevKitM, LOLIN C3 Mini, M5Stamp C3 | BLE HID (HID over GATT) | 🧪 Beta, not yet confirmed on iPhone |
-| **ESP32-S3**: S3-Zero, DevKitC, XIAO S3, AtomS3, S3 SuperMini | BLE HID (HID over GATT) | ✅ Tested on iPhone (Waveshare ESP32-S3-Zero) |
-| **ESP32-C6**: DevKitC/M, XIAO C6 | BLE HID (HID over GATT) | 🧪 Beta, not yet confirmed on iPhone |
-| ESP32-S2, ESP8266 | no Bluetooth | ❌ Not possible |
-| ESP32-H2 / C2 / C5 | BLE | 🔜 Planned |
+| **ESP32** (original): DevKit, DOIT DevKit V1, NodeMCU-32S, WROOM-32, WROVER, PICO-D4, D1 mini32, M5 Atom, ESP32-CAM, TTGO… incl. single-core & 26 MHz crystal variants | ✅ Yes | Classic Bluetooth HID. Approach tested on iPhone (v1); v2 rewrite being verified |
+| ESP32-S3, ESP32-C3, ESP32-C6, ESP32-C5, ESP32-H2, ESP32-C2 | ❌ No | Bluetooth LE only: they pair, but iOS Shortcuts doesn't list them as triggers (tested with an ESP32-S3) |
+| ESP32-S2, ESP8266 | ❌ No | No Bluetooth |
 
-Any flash size **from 2 MB** works. If you test a beta chip, please
-[open an issue](https://github.com/Mattboxx/esp32-bt-trigger/issues)
-with the result, even if it's just "works on my C3 SuperMini".
-
-> The BLE variant is a real HID mouse over Bluetooth LE (the same protocol BLE mice
-> and keyboards use), **not** a beacon. It is confirmed on iPhone with an ESP32-S3;
-> C3 and C6 run the same code and stay *beta* until someone reports them.
+Any flash size **from 2 MB** works. Buying one? Look for **"ESP32 DevKit"** or
+**"ESP32-WROOM-32"** (about $3–5), not S3/C3/C6. Tested it on a board not listed here?
+[Open a hardware report](https://github.com/Mattboxx/esp32-bt-trigger/issues/new?template=hardware-report.yml),
+even if it's just "works on my DevKit".
 
 ## Settings (no code to edit)
 
@@ -99,7 +97,7 @@ rewrites them in a second without touching the pairing.
 | **Duration** *(button)* | How long each press keeps the iPhone connected (default 10 s; under ~3 s the iPhone may not finish connecting). |
 | **Status LED** | None, normal LED or RGB (WS2812/SK6812). Fast blink = ready to pair, slow blink = looking for the iPhone, solid = connected. |
 | **"Forget phones" button** | Hold 5 s to wipe every pairing (default: the BOOT button). |
-| **Transmit power** | Default, or a fixed level in dBm (only the levels your chip supports: ESP32 −12…+9, S3/C3 −24…+21, C6 −15…+20). Lower = shorter range and less power, higher = better through boxes and metal. |
+| **Transmit power** | Default, or a fixed level in dBm (ESP32 levels: −12 to +9 dBm, 3 dB steps). Lower = shorter range and less power, higher = better through boxes and metal. |
 | **Pairing window** | Only accept *new* phones in the first 60 s / 3 min after power-on, so strangers can't see or pair it. Paired phones always reconnect. |
 | **Board preset** | Pre-fills LED and button pins for 20+ popular boards. |
 
@@ -136,7 +134,7 @@ See [`firmware/README.md`](firmware/README.md).
 <summary><b>Build from source (PlatformIO)</b></summary>
 
 ```bash
-pio run -e esp32          # or esp32c3 / esp32s3 / esp32c6
+pio run -e esp32
 ```
 
 ```bash
@@ -168,7 +166,6 @@ the precompiled Arduino libraries. The first build downloads the SDK and is slow
 |---|---|
 | `src/main.c` | Trigger modes, reset button, pairing window, status LED |
 | `src/transport_classic.c` | Classic Bluetooth HID mouse + active reconnect (ESP32) |
-| `src/transport_ble.c` | BLE HID mouse (ESP32-S3/C3/C6) |
 | `src/config.c` | Reads settings from the `btcfg` flash partition |
 | `partitions.csv` | 2 MB layout with the 4 KB `btcfg` settings partition at `0x180000` |
 | `docs/` | Website + web installer (GitHub Pages) |
