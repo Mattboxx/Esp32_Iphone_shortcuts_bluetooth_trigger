@@ -21,10 +21,10 @@ extern "C" {
 #define BTT_CFG_MAGIC        0x47545442u   /* "BTTG" little-endian */
 #define BTT_CFG_VERSION      1
 #define BTT_CFG_SIZE         64
-#define BTT_NAME_MAX         29            /* bytes, fits a BLE scan response */
+#define BTT_NAME_MAX         29            /* bytes (fixed by the settings format) */
 
 /* Firmware version shown in the logs and in the web flasher. */
-#define BTT_FW_VERSION       "2.0.0"
+#define BTT_FW_VERSION       "2.1.0"
 
 typedef enum {
     TRIGGER_ALWAYS = 0,   /* connect whenever powered (classic use)         */

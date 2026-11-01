@@ -30,10 +30,9 @@ int main(int argc, char **argv)
     if (argc < 2) return 2;
     if (strcmp(argv[1], "--nearest") == 0) {          /* TX power level picker */
         static const int8_t esp32[] = {-12, -9, -6, -3, 0, 3, 6, 9};
-        static const int8_t c6[] = {-15, -12, -9, -6, -3, 0, 3, 6, 9, 12, 15, 18, 20};
         for (int i = 2; i < argc; i++) {
             int d = atoi(argv[i]);
-            printf("%d:%d:%d ", d, esp32[btt_nearest_level(esp32, 8, d)], c6[btt_nearest_level(c6, 13, d)]);
+            printf("%d:%d ", d, esp32[btt_nearest_level(esp32, 8, d)]);
         }
         printf("\n");
         return 0;

@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
   "config_offset": 1572864,
   "builds": [
     {
@@ -7,32 +7,8 @@
       "env": "esp32",
       "transport": "classic",
       "file": "bt-trigger-esp32.factory.bin",
-      "size": 663200,
-      "sha256": "f00564906c968380fbd417df841482af0024cdfcbe70cffbb811d078a0154e83"
-    },
-    {
-      "chip": "ESP32-S3",
-      "env": "esp32s3",
-      "transport": "ble",
-      "file": "bt-trigger-esp32s3.factory.bin",
-      "size": 829616,
-      "sha256": "1921826a2d0f033895dd7af25bbb43d04a25bc8a5fe7c260b2bb50759d8ba3d7"
-    },
-    {
-      "chip": "ESP32-C3",
-      "env": "esp32c3",
-      "transport": "ble",
-      "file": "bt-trigger-esp32c3.factory.bin",
-      "size": 879536,
-      "sha256": "45b8ba8cf2863be57bf6bab3011c3b74cf228cc8e958da3b33072b04664224aa"
-    },
-    {
-      "chip": "ESP32-C6",
-      "env": "esp32c6",
-      "transport": "ble",
-      "file": "bt-trigger-esp32c6.factory.bin",
-      "size": 1000256,
-      "sha256": "ef0c3d9630efdd56d2635d6f226cee387e0fafe3239f84151e98c5710203b95f"
+      "size": 663184,
+      "sha256": "05026c423ef531e1cd55e7a6f53ca7de86dae88e1a99465901489d22ca955bde"
     }
   ]
 }

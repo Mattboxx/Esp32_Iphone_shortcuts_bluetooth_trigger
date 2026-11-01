@@ -103,10 +103,10 @@ test("TX power: default, minimum, maximum, 0 dBm and clamping", () => {
   assert.equal(firmwareParse(encodeConfig({ ...full, txPowerDbm: 40 })).txPowerDbm, 21);
 });
 
-test("TX power: firmware picks the nearest level each chip supports", () => {
+test("TX power: firmware picks the nearest level the ESP32 supports", () => {
   const out = execFileSync(exe, ["--nearest", "-24", "-13", "0", "2", "9", "12", "21"]).toString().trim();
-  // dBm asked : ESP32 Classic (-12..+9) : ESP32-C6 (-15..+20)
-  assert.equal(out, "-24:-12:-15 -13:-12:-12 0:0:0 2:3:3 9:9:9 12:9:12 21:9:20");
+  // dBm asked : ESP32 Classic level (-12..+9 in 3 dB steps)
+  assert.equal(out, "-24:-12 -13:-12 0:0 2:3 9:9 12:9 21:9");
 });
 
 test("corrupted byte -> CRC rejects it, defaults used", () => {

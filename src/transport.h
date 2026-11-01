@@ -1,10 +1,6 @@
 /*
- * Bluetooth transport abstraction.
- *
- *  - transport_classic.c : Classic Bluetooth (BR/EDR) HID mouse - original ESP32
- *  - transport_ble.c     : Bluetooth Low Energy HID mouse - ESP32-S3 / C3 / C6
- *
- * Exactly one of them is compiled, depending on the chip.
+ * Bluetooth transport: Classic Bluetooth (BR/EDR) HID mouse on the original
+ * ESP32 (transport_classic.c). Kept as an interface so main.c stays small.
  */
 #pragma once
 

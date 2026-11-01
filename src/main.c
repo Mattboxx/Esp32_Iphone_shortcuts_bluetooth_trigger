@@ -7,8 +7,9 @@
  *   The act of CONNECTING is the trigger: iOS runs a Shortcuts automation
  *   set to "When <device> connects" (and optionally "disconnects").
  *
- *   - original ESP32         -> Classic Bluetooth HID (transport_classic.c)
- *   - ESP32-S3 / C3 / C6     -> Bluetooth Low Energy HID (transport_ble.c)
+ *   Original ESP32 only: it uses Classic Bluetooth HID (transport_classic.c).
+ *   iOS Shortcuts does not list Bluetooth LE (GATT) accessories as automation
+ *   triggers, so BLE-only chips (ESP32-S3 / C3 / C6 / H2) cannot work.
  *
  *   Trigger modes (set them in the web flasher, no code needed):
  *   - always : connect whenever powered (power it from a car, scooter, lamp...)
@@ -31,6 +32,10 @@
 #include "config.h"
 #include "led.h"
 #include "transport.h"
+
+#if !CONFIG_IDF_TARGET_ESP32 || !CONFIG_BT_CLASSIC_ENABLED
+#error "BT Trigger needs the original ESP32 with Classic Bluetooth: iOS Shortcuts ignores BLE-only accessories."
+#endif
 
 static const char *TAG = "BTTRIGGER";
 
@@ -199,13 +204,7 @@ void app_main(void)
     ESP_ERROR_CHECK(ret);
 
     btt_config_load(&s_cfg);
-    ESP_LOGI(TAG, "ESP32 BT Trigger v%s - %s", BTT_FW_VERSION,
-#if CONFIG_BT_CLASSIC_ENABLED
-             "Classic Bluetooth HID"
-#else
-             "Bluetooth LE HID"
-#endif
-    );
+    ESP_LOGI(TAG, "ESP32 BT Trigger v%s - Classic Bluetooth HID", BTT_FW_VERSION);
     btt_config_log(&s_cfg);
 
     led_init(&s_cfg);
