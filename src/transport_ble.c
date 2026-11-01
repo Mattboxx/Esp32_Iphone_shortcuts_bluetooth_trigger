@@ -219,6 +219,26 @@ void transport_init(const btt_config_t *cfg)
     esp_bt_controller_config_t bt_cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_bt_controller_init(&bt_cfg));
     ESP_ERROR_CHECK(esp_bt_controller_enable(ESP_BT_MODE_BLE));
+
+    /* TX power for advertising and for the connection (default type). */
+    if (cfg->tx_power_set) {
+#if CONFIG_IDF_TARGET_ESP32C6
+        static const int8_t lv[] = {-15, -12, -9, -6, -3, 0, 3, 6, 9, 12, 15, 18, 20};
+        const int base = ESP_PWR_LVL_N15;
+#else   /* ESP32-S3 / ESP32-C3 */
+        static const int8_t lv[] = {-24, -21, -18, -15, -12, -9, -6, -3, 0, 3, 6, 9, 12, 15, 18, 21};
+        const int base = ESP_PWR_LVL_N24;
+#endif
+        int i = btt_nearest_level(lv, sizeof(lv), cfg->tx_power_dbm);
+        esp_power_level_t p = (esp_power_level_t)(base + i);
+        if (esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_DEFAULT, p) == ESP_OK &&
+            esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_ADV, p) == ESP_OK) {
+            ESP_LOGI(TAG, "TX power set to %+d dBm", lv[i]);
+        } else {
+            ESP_LOGW(TAG, "Could not set TX power");
+        }
+    }
+
     ESP_ERROR_CHECK(esp_bluedroid_init());
     ESP_ERROR_CHECK(esp_bluedroid_enable());
 

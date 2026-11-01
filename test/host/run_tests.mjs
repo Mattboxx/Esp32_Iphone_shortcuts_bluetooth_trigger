@@ -40,7 +40,7 @@ const full = {
   ...DEFAULTS, name: "Scooter Ninebot", reconnectS: 12, pulseS: 30, pairWindowS: 120,
   ledGpio: 27, ledType: LED.ws2812, ledActiveLow: false, ledBrightness: 80,
   buttonGpio: 39, triggerMode: TRIGGER.pulse, triggerGpio: 32, triggerActiveHigh: true,
-  triggerPull: PULL.none, debounceMs: 250, holdS: 45,
+  triggerPull: PULL.none, debounceMs: 250, holdS: 45, txPowerDbm: -12,
 };
 
 test("firmware reads every field written by the web flasher", () => {
@@ -93,6 +93,20 @@ test("out-of-range debounce / hold are clamped by the firmware", () => {
   const fw = firmwareParse(b);
   assert.equal(fw.debounceMs, 10);
   assert.equal(fw.holdS, 3600);
+});
+
+test("TX power: default, minimum, maximum, 0 dBm and clamping", () => {
+  assert.equal(firmwareParse(encodeConfig({ ...full, txPowerDbm: null })).txPowerDbm, null);
+  for (const dbm of [-24, -12, 0, 9, 21]) {
+    assert.equal(firmwareParse(encodeConfig({ ...full, txPowerDbm: dbm })).txPowerDbm, dbm, `${dbm} dBm`);
+  }
+  assert.equal(firmwareParse(encodeConfig({ ...full, txPowerDbm: 40 })).txPowerDbm, 21);
+});
+
+test("TX power: firmware picks the nearest level each chip supports", () => {
+  const out = execFileSync(exe, ["--nearest", "-24", "-13", "0", "2", "9", "12", "21"]).toString().trim();
+  // dBm asked : ESP32 Classic (-12..+9) : ESP32-C6 (-15..+20)
+  assert.equal(out, "-24:-12:-15 -13:-12:-12 0:0:0 2:3:3 9:9:9 12:9:12 21:9:20");
 });
 
 test("corrupted byte -> CRC rejects it, defaults used", () => {

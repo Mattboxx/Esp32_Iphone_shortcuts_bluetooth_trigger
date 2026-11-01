@@ -61,8 +61,13 @@ typedef struct {
     uint8_t  trigger_pull;     /* pull_mode_t                                     */
     uint16_t debounce_ms;      /* input must be stable this long (10..5000)      */
     uint16_t hold_s;           /* SWITCH: stay connected N s after release       */
+    bool     tx_power_set;     /* false = keep Espressif's default TX power      */
+    int8_t   tx_power_dbm;     /* wanted TX power; nearest level the chip has    */
     bool     from_flash;       /* true if loaded from the btcfg partition         */
 } btt_config_t;
+
+/* Index of the entry of levels[] closest to dbm (TX power tables). */
+int btt_nearest_level(const int8_t *levels, int n, int dbm);
 
 /* Load the configuration (defaults if the partition is blank/invalid). */
 void btt_config_load(btt_config_t *cfg);

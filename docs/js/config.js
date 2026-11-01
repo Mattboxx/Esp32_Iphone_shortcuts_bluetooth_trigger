@@ -28,6 +28,7 @@ export const DEFAULTS = Object.freeze({
   triggerPull: PULL.auto,
   debounceMs: 50,
   holdS: 0,
+  txPowerDbm: null,      // null = chip default
 });
 
 const CRC_TABLE = (() => {
@@ -85,6 +86,8 @@ export function encodeConfig(s) {
   b[54] = clamp(s.triggerPull ?? PULL.auto, 0, 3);
   v.setUint16(56, clamp(s.debounceMs ?? DEFAULTS.debounceMs, 10, 5000), true);
   v.setUint16(58, clamp(s.holdS ?? 0, 0, 3600), true);
+  // 0 = default TX power, else dBm + 100 (firmware picks the nearest chip level)
+  b[55] = s.txPowerDbm === null || s.txPowerDbm === undefined ? 0 : clamp(s.txPowerDbm, -24, 21) + 100;
   v.setUint32(60, crc32(b.subarray(0, CFG_SIZE - 4)), true);
   return b;
 }
@@ -122,5 +125,6 @@ export function decodeConfig(bytes) {
     triggerPull: b[54] <= 3 ? b[54] : PULL.auto,
     debounceMs: v.getUint16(56, true) || DEFAULTS.debounceMs,
     holdS: v.getUint16(58, true),
+    txPowerDbm: b[55] === 0 ? null : b[55] - 100,
   };
 }

@@ -219,7 +219,7 @@
           </div>
 
           <details class="field advanced">
-            <summary>Status LED, reset button &amp; pairing</summary>
+            <summary>Status LED, reset button, pairing &amp; transmit power</summary>
             <div class="field-row">
               <div class="field">
                 <label for="led-type">Status LED</label>
@@ -259,6 +259,15 @@
               </div>
             </div>
             <small class="hint">"Pairing window" hides the device from strangers: phones already paired always reconnect.</small>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="tx-power">Transmit power</label>
+                <select id="tx-power"></select>
+              </div>
+            </div>
+            <small class="hint">Lower power = shorter range, less current and heat: the iPhone must be closer for the trigger to fire.
+              Raise it if the board sits in a box, a vehicle frame or behind metal.</small>
           </details>
         </form>
       </li>
@@ -343,7 +352,7 @@ esptool.py --port &lt;PORT&gt; write_flash 0x0 bt-trigger-esp32.factory.bin</cod
       <p>With a pin trigger the board stays visible until a phone is paired, so you can pair it before wiring anything. After that it only connects when the pin is active.</p></details>
     <details><summary>Which boards work?</summary>
       <p><b>Any original ESP32</b> (DevKit, WROOM, WROVER, PICO, D1 mini32, M5 Atom, ESP32-CAM, TTGO…), including single-core and 26 MHz-crystal variants. It uses <b>Classic Bluetooth HID</b>, the mode this project was first tested with on iPhone (v1; the v2 rewrite is being verified).</p>
-      <p><b>ESP32-C3, ESP32-S3 and ESP32-C6</b> have no Classic Bluetooth, so they get a <b>Bluetooth LE HID mouse</b> (HID over GATT, the same protocol as BLE mice and keyboards). <span class="tag">beta</span>: it builds and follows Espressif's HID reference, but it has not been confirmed on an iPhone yet. If you try it, please <a href="https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/issues">report back</a>.</p>
+      <p><b>ESP32-C3, ESP32-S3 and ESP32-C6</b> have no Classic Bluetooth, so they get a <b>Bluetooth LE HID mouse</b> (HID over GATT, the same protocol as BLE mice and keyboards). <span class="tag ok">tested</span> on iPhone with a Waveshare ESP32-S3-Zero. ESP32-C3 and C6 run the same code but are still <span class="tag">beta</span> until someone confirms them: if you try one, please <a href="https://github.com/Mattboxx/Esp32_Iphone_shortcuts_bluetooth_trigger/issues/new?template=hardware-report.yml">report back</a>.</p>
       <p><b>Not compatible:</b> ESP32-S2 and ESP8266 (no Bluetooth). Any flash size from 2 MB works.</p></details>
     <details><summary>Why a mouse and not a keyboard or a "beacon"?</summary>
       <p>The Shortcuts "Bluetooth" automation only lists accessories paired in Settings, and iOS only pairs certain device types from there: audio, keyboards, mice, game controllers. A plain BLE beacon never shows up. A keyboard would hide your on-screen keyboard while connected. A mouse has no side effects except an optional on-screen pointer.</p></details>

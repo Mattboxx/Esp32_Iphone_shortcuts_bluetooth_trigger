@@ -62,7 +62,7 @@ clicked.
 |---|---|---|
 | **ESP32** (original): DevKit, WROOM-32, WROVER, PICO-D4, D1 mini32, M5 Atom, ESP32-CAM, TTGO… incl. single-core & 26 MHz crystal variants | Classic BT HID | ✅ Tested on iPhone (v1); v2 rewrite being verified |
 | **ESP32-C3**: SuperMini, XIAO C3, DevKitM, LOLIN C3 Mini, M5Stamp C3 | BLE HID (HID over GATT) | 🧪 Beta, not yet confirmed on iPhone |
-| **ESP32-S3**: DevKitC, XIAO S3, AtomS3, S3 SuperMini | BLE HID (HID over GATT) | 🧪 Beta, not yet confirmed on iPhone |
+| **ESP32-S3**: S3-Zero, DevKitC, XIAO S3, AtomS3, S3 SuperMini | BLE HID (HID over GATT) | ✅ Tested on iPhone (Waveshare ESP32-S3-Zero) |
 | **ESP32-C6**: DevKitC/M, XIAO C6 | BLE HID (HID over GATT) | 🧪 Beta, not yet confirmed on iPhone |
 | ESP32-S2, ESP8266 | no Bluetooth | ❌ Not possible |
 | ESP32-H2 / C2 / C5 | BLE | 🔜 Planned |
@@ -72,9 +72,8 @@ Any flash size **from 2 MB** works. If you test a beta chip, please
 with the result, even if it's just "works on my C3 SuperMini".
 
 > The BLE variant is a real HID mouse over Bluetooth LE (the same protocol BLE mice
-> and keyboards use), **not** a beacon. It follows Espressif's HID reference
-> implementation and builds in CI, but nobody has confirmed it on an iPhone yet. That
-> is why it is marked beta.
+> and keyboards use), **not** a beacon. It is confirmed on iPhone with an ESP32-S3;
+> C3 and C6 run the same code and stay *beta* until someone reports them.
 
 ## Settings (no code to edit)
 
@@ -94,6 +93,7 @@ rewrites them in a second without touching the pairing.
 | **Duration** *(button)* | How long each press keeps the iPhone connected (default 10 s; under ~3 s the iPhone may not finish connecting). |
 | **Status LED** | None, normal LED or RGB (WS2812/SK6812). Fast blink = ready to pair, slow blink = looking for the iPhone, solid = connected. |
 | **"Forget phones" button** | Hold 5 s to wipe every pairing (default: the BOOT button). |
+| **Transmit power** | Default, or a fixed level in dBm (only the levels your chip supports: ESP32 −12…+9, S3/C3 −24…+21, C6 −15…+20). Lower = shorter range and less power, higher = better through boxes and metal. |
 | **Pairing window** | Only accept *new* phones in the first 60 s / 3 min after power-on, so strangers can't see or pair it. Paired phones always reconnect. |
 | **Board preset** | Pre-fills LED and button pins for 20+ popular boards. |
 
