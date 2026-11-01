@@ -8,6 +8,7 @@
 sdkconfig.*
 !sdkconfig.defaults
 !sdkconfig.defaults.*
+!test/host/stubs/sdkconfig.h
 
 # Site assembly
 _site/
