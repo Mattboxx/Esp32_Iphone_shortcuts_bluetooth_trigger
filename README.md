@@ -88,7 +88,7 @@ clicked.
 
 | Chip | Works? | Why |
 |---|---|---|
-| **ESP32** (original): DevKit, DOIT DevKit V1, NodeMCU-32S, WROOM-32, WROVER, PICO-D4, D1 mini32, M5 Atom, ESP32-CAM, TTGO… incl. single-core & 26 MHz crystal variants | ✅ Yes | Classic Bluetooth HID. Approach tested on iPhone (v1); v2 rewrite being verified |
+| **ESP32** (original): DevKit, DOIT DevKit V1, NodeMCU-32S, WROOM-32, WROVER, PICO-D4, D1 mini32, M5 Atom, ESP32-CAM, TTGO… incl. single-core & 26 MHz crystal variants | ✅ Yes | Classic Bluetooth HID. Approach tested on iPhone (v1) |
 | ESP32-S3, ESP32-C3, ESP32-C6, ESP32-C5, ESP32-H2, ESP32-C2 | ❌ No | Bluetooth LE only: they pair, but iOS Shortcuts doesn't list them as triggers (tested with an ESP32-S3) |
 | ESP32-S2, ESP8266 | ❌ No | No Bluetooth |
 
