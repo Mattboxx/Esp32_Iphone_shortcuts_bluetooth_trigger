@@ -49,7 +49,7 @@
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 body {
   margin: 0;
   background: var(--bg);
@@ -73,16 +73,25 @@ section.wrap { padding-top: 56px; padding-bottom: 8px; }
   border-bottom: 1px solid var(--border);
 }
 .topbar-inner { display: flex; align-items: center; justify-content: space-between; height: 56px; gap: 16px; }
-.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--text); text-decoration: none; }
-.topbar nav { display: flex; gap: 18px; overflow-x: auto; }
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--text); text-decoration: none; white-space: nowrap; flex: none; }
+.topbar nav { display: flex; gap: 18px; align-items: center; }
 .topbar nav a { color: var(--muted); text-decoration: none; font-size: .93rem; white-space: nowrap; }
 .topbar nav a:hover { color: var(--text); }
 .topbar nav .gh { color: var(--text); font-weight: 600; }
-@media (max-width: 640px) { .topbar nav a:not(.gh):not(.support-link):not([href="#install"]) { display: none; } }
+@media (max-width: 640px) {
+  .topbar nav a[href="#install"], .topbar nav a[href="#how"], .topbar nav a[href="#iphone"], .topbar nav a[href="#faq"] { display: none; }
+  .topbar-inner { gap: 10px; }
+  .topbar nav { gap: 14px; }
+  .brand { font-size: .98rem; }
+  .brand img { width: 24px; height: 24px; }
+}
 
 /* ---------- hero ---------- */
 .hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 40px; align-items: center; padding-top: 64px !important; }
-@media (max-width: 860px) { .hero { grid-template-columns: 1fr; padding-top: 40px !important; } }
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; padding-top: 32px !important; gap: 20px; }
+  .hero-art { max-width: 420px; margin: 4px auto 0; }
+}
 .eyebrow { color: var(--muted); font-size: .85rem; font-weight: 600; letter-spacing: .02em; margin: 0 0 12px; }
 .hero h1 { font-size: clamp(2.1rem, 5.4vw, 3.4rem); margin: 0 0 18px; }
 .accent { color: var(--accent); }

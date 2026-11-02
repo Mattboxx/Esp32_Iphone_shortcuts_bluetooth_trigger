@@ -44,8 +44,9 @@
       <p class="eyebrow">Open-source firmware · ESP32 · iPhone Shortcuts</p>
       <h1>When it turns on,<br>your iPhone <span class="accent">does something.</span></h1>
       <p class="lead">A $3 ESP32 board becomes a Bluetooth device your iPhone recognizes.
-        Power it up and the <b>Shortcuts</b> app runs your automation, with no tapping, no NFC tag,
-        no extra app, no Wi-Fi and no cloud.</p>
+        Power it up and the <b>Shortcuts</b> app runs an automation <b>on the phone itself</b> —
+        open Maps, flip a Focus, message someone, call Home Assistant.
+        It works even with no Wi-Fi where the board is: the phone in your pocket is the link.</p>
       <div class="cta">
         <a class="btn primary" href="#install">Install it from your browser</a>
         <a class="btn ghost" href="https://github.com/Mattboxx/esp32-bt-trigger">Source code</a>
@@ -92,13 +93,25 @@
   <section class="wrap uses" aria-labelledby="uses-h">
     <h2 id="uses-h">The "when this turns on, do that" building block</h2>
     <div class="grid3">
-      <article><h3>🛴 Scooter, bike, car</h3><p>Ignition on → open your navigation or dashboard app, start a ride timer, set the volume.</p></article>
-      <article><h3>🖥️ Desk &amp; workshop</h3><p>Desk lamp or monitor on → Work Focus on. 3D printer powered → start a timer, log it.</p></article>
-      <article><h3>🚪 Doors &amp; sensors</h3><p><i>Switch mode:</i> a reed switch or relay opens → your iPhone gets the event.</p></article>
-      <article><h3>🔘 A real button</h3><p><i>Pulse mode:</i> press a button → it connects for a few seconds → Shortcut runs.</p></article>
-      <article><h3>🏠 Home Assistant</h3><p>Shortcuts can call Home Assistant, webhooks or HomeKit, so one trigger can drive the whole house.</p></article>
-      <article><h3>🌙 Bedside</h3><p>Night lamp on → Sleep Focus, alarm set, lights dimmed. Lamp off → turn it back.</p></article>
+      <article><h3>🛴 Scooter, bike, car</h3><p>Ignition on → your iPhone opens Maps, starts a ride timer, sets the volume. <b>No Wi-Fi out there</b> — the phone does it over Bluetooth.</p></article>
+      <article><h3>🖥️ Desk &amp; workshop</h3><p>Desk lamp or monitor on → Work Focus on, playlist starts. 3D printer powered → a timer and a log entry on your phone.</p></article>
+      <article><h3>🚪 Doors &amp; sensors</h3><p><i>Pin mode:</i> a reed switch or relay closes → your iPhone gets a notification, runs a scene, or pings Home Assistant.</p></article>
+      <article><h3>🔘 A real button</h3><p><i>Button mode:</i> press it → the phone connects for a few seconds → any Shortcut runs. A physical button for your phone.</p></article>
+      <article><h3>🏠 Home Assistant, from anywhere</h3><p>The Shortcut forwards the event to HA (webhook or app) over your phone's mobile data — so even a scooter far from home reaches HA.</p></article>
+      <article><h3>🌙 Bedside</h3><p>Night lamp on → Sleep Focus, alarm set, lights dimmed. Lamp off → back to normal.</p></article>
     </div>
+  </section>
+
+  <!-- ================= WHY ================= -->
+  <section class="wrap why" aria-labelledby="why-h">
+    <h2 id="why-h">"Can't an ESP32 with Wi-Fi and Home Assistant already do this?"</h2>
+    <p class="note">For flipping switches and logging data at home, yes. This solves the two things that setup <b>can't</b>:</p>
+    <div class="grid3">
+      <article><h3>📱 It acts on your phone</h3><p>Wi-Fi + HA can control your house, but it can't open Maps, turn on a Focus, start a timer or run a Shortcut <b>on your iPhone</b>. This triggers the phone directly — that's the whole point.</p></article>
+      <article><h3>📶 It works with no network</h3><p>On a scooter, bike or car there's no home Wi-Fi and no SIM. A Wi-Fi ESP32 goes offline the moment you leave. This one talks to the phone in your pocket over Bluetooth, and <b>the phone</b> is the gateway to the internet and HA.</p></article>
+      <article><h3>🪶 Nothing to run or install</h3><p>No Home Assistant server, no companion app, no account, no cloud. Just a $3 board and the Shortcuts app that's already on every iPhone.</p></article>
+    </div>
+    <p class="note">In short: a Wi-Fi ESP32 sends data <i>to a server</i>. This sends an event <i>to the phone you carry</i>, wherever you are. The two can work together — the Shortcut can still call Home Assistant.</p>
   </section>
 
   <!-- ================= HOW ================= -->

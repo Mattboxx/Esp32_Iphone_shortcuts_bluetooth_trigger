@@ -48,6 +48,24 @@ One firmware does both: pick the mode in the web installer, and change it later 
 **Save settings only**. With a pin trigger the board stays visible until a phone is paired,
 so you can pair it before wiring anything.
 
+## Why not just an ESP32 with Wi-Fi and Home Assistant?
+
+A Wi-Fi ESP32 + Home Assistant is great for flipping switches and logging data **at
+home**. This project does two things that setup can't:
+
+- **It acts on the phone itself.** Wi-Fi + HA can control your house, but it can't
+  open Maps, turn on a Focus, start a timer, set the volume or run any Shortcut *on
+  your iPhone*. This triggers the phone directly — that's the point.
+- **It works with no network.** On a scooter, bike or car there's no home Wi-Fi and
+  no SIM, so a Wi-Fi ESP32 is offline the moment you leave. This one talks to the
+  phone in your pocket over Bluetooth, and **the phone** is the gateway to the
+  internet (and to HA, over mobile data).
+- **Nothing to run or install.** No HA server, no companion app, no account, no
+  cloud — just the board and the built-in Shortcuts app.
+
+A Wi-Fi ESP32 sends data *to a server*; this sends an event *to the phone you carry*,
+wherever you are. They also combine: the Shortcut can still call Home Assistant.
+
 ## How it works
 
 The ESP32 presents itself to the iPhone as a **Bluetooth mouse that never moves**.
